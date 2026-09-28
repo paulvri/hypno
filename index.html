@@ -2,7 +2,12 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#040407">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
 <title>Слои восприятия</title>
 <style>
 :root{
@@ -11,10 +16,11 @@
   --l1:#dfe9ff; --l2:#ff86a6; --l3:#b8a2ff;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#040407;color:var(--fg);overflow:hidden;
+html,body{margin:0;height:100%;position:fixed;inset:0;overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;
+  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;background:#040407;color:var(--fg);overflow:hidden;
   font:13px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   -webkit-user-select:none;user-select:none}
-canvas#gl{position:fixed;inset:0;width:100vw;height:100vh;display:block;cursor:crosshair;touch-action:none}
+canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none}
 body.m0 canvas#gl{cursor:grab}
 body.m0.dragging canvas#gl{cursor:grabbing}
 body.m0.hovering canvas#gl{cursor:pointer}
@@ -22,12 +28,12 @@ body.m0.hovering canvas#gl{cursor:pointer}
 body.hide-ui .ui{opacity:0;pointer-events:none}
 body.m1 #legend{opacity:0}
 
-#head{left:28px;top:24px;max-width:470px;pointer-events:none}
+#head{left:calc(28px + env(safe-area-inset-left));top:calc(24px + env(safe-area-inset-top));max-width:470px;pointer-events:none}
 #head h1{font-size:11px;letter-spacing:.34em;font-weight:500;margin:0 0 12px;color:var(--faint);text-transform:uppercase}
 #head h2{font-size:23px;font-weight:300;margin:0 0 7px;letter-spacing:.01em}
 #head p{margin:0;color:var(--dim);font-size:13px;line-height:1.5}
 
-#legend{left:28px;bottom:26px;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+#legend{left:calc(28px + env(safe-area-inset-left));bottom:calc(26px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;pointer-events:none}
 .lg{display:flex;align-items:center;gap:10px;opacity:calc(.38 + .62*var(--a,0));transition:opacity .3s}
 .lg i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 calc(4px + 14px*var(--a,0)) var(--c)}
 .lg b{font-weight:500;width:22px;color:var(--c);font-size:12px;letter-spacing:.06em}
@@ -35,7 +41,7 @@ body.m1 #legend{opacity:0}
 .lg small{display:block;color:var(--faint);font-size:11px}
 .lg[data-l="0"]{--c:var(--l1)} .lg[data-l="1"]{--c:var(--l2)} .lg[data-l="2"]{--c:var(--l3)}
 
-#modes{left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:4px;padding:5px;
+#modes{left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:4px;padding:5px;
   border:1px solid var(--line);border-radius:14px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 #modes button{all:unset;cursor:pointer;display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:10px;color:var(--dim);transition:background .25s,color .25s}
 #modes button:hover{color:var(--fg);background:rgba(255,255,255,.05)}
@@ -47,7 +53,7 @@ body.m1 #legend{opacity:0}
 
 #hint{margin-top:12px;color:var(--faint);font-size:11.5px;line-height:1.5;max-width:430px;padding-left:10px;border-left:1px solid var(--line)}
 
-#panel{right:24px;top:24px;width:262px;padding:14px 16px 16px;border:1px solid var(--line);border-radius:14px;background:var(--glass);
+#panel{right:calc(24px + env(safe-area-inset-right));top:calc(72px + env(safe-area-inset-top));max-height:calc(100% - 180px);overflow:auto;width:262px;padding:14px 16px 16px;border:1px solid var(--line);border-radius:14px;background:var(--glass);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 #panel h3{margin:0 0 10px;font-size:10.5px;letter-spacing:.26em;font-weight:500;text-transform:uppercase;color:var(--faint)}
 #panel .row{margin:10px 0}
@@ -85,7 +91,63 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 #err{position:fixed;inset:auto 20px 20px 20px;max-height:45vh;overflow:auto;background:rgba(40,0,10,.92);color:#ffd5dd;
   font:12px/1.4 ui-monospace,monospace;white-space:pre-wrap;padding:14px;border-radius:10px;display:none;z-index:50}
 #nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:var(--dim);z-index:40;padding:40px}
-@media (max-width:980px){#panel{top:auto;bottom:90px;right:14px;width:230px}#legend{display:none}#head p{display:none}}
+button{touch-action:manipulation}
+#tools{top:calc(20px + env(safe-area-inset-top));right:calc(24px + env(safe-area-inset-right));display:flex;gap:6px}
+#tools button{all:unset;cursor:pointer;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;border:1px solid var(--line);
+  background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--dim);transition:color .2s,border-color .2s}
+#tools button:hover,#tools button.on{color:#fff;border-color:rgba(255,255,255,.3)}
+#tools svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+body.hide-ui #tools{opacity:1;pointer-events:auto}
+body.hide-ui #tools button:not(#tHide){display:none}
+body.hide-ui #tHide{opacity:.45}
+body:not(.compact) #tPanel{display:none}
+body.nofs #tFull{display:none}
+body.touch #modes kbd{display:none}
+#modes button{white-space:nowrap}
+
+/* tablets: iPad / Android tablets, small laptops */
+body.mid #head{max-width:calc(100% - 340px)}
+body.mid #head h2{font-size:20px}
+body.mid #panel{width:246px}
+body.mid #legend{display:none}
+body.mid #modes .ml{display:none}
+
+/* phones (portrait) and any narrow window */
+body.compact #head{left:calc(14px + env(safe-area-inset-left));right:calc(14px + env(safe-area-inset-right));top:calc(12px + env(safe-area-inset-top));max-width:none}
+body.compact #head h1{font-size:9.5px;margin:4px 150px 6px 0;letter-spacing:.26em}
+body.compact #head h2{font-size:17px;margin:0 150px 5px 0}
+body.compact #head p{font-size:12px;line-height:1.42;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+body.compact #hint{font-size:11px;margin-top:8px;max-width:none}
+body.compact #tools{top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right))}
+body.compact #tools button{width:42px;height:42px}
+body.compact #legend{display:none}
+body.compact #modes{left:calc(8px + env(safe-area-inset-left));right:calc(8px + env(safe-area-inset-right));transform:none;bottom:calc(8px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:repeat(4,1fr);gap:3px;padding:4px}
+body.compact #modes button{justify-content:center;text-align:center;padding:7px 2px;min-height:44px}
+body.compact #modes kbd,body.compact #modes .ml{display:none}
+body.compact #modes .mn{font-size:12px;line-height:1.2;white-space:normal}
+body.compact #panel{left:calc(8px + env(safe-area-inset-left));right:calc(8px + env(safe-area-inset-right));top:auto;width:auto;
+  bottom:calc(74px + env(safe-area-inset-bottom));max-height:46%;transform:translateY(14px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+body.compact.panel-open #panel{opacity:1;transform:none;pointer-events:auto}
+body.compact.hide-ui #panel{opacity:0;pointer-events:none}
+body.compact #gauge{left:calc(14px + env(safe-area-inset-left));top:54%;height:min(220px,30%);width:40px}
+body.compact #gauge .node span{display:none}
+body.compact .plabel{font-size:11px}
+body.compact .plabel small{display:none}
+/* phones in landscape */
+body.short #head h1,body.short #head p{display:none}
+body.short #head h2{font-size:16px}
+body.short #hint{margin-top:4px}
+body.short #gauge{display:none!important}
+body.short #modes{left:50%;right:auto;transform:translateX(-50%);width:min(600px,calc(100% - 16px - env(safe-area-inset-left) - env(safe-area-inset-right)))}
+body.short #panel{left:auto;right:calc(8px + env(safe-area-inset-right));width:290px;top:calc(62px + env(safe-area-inset-top));bottom:calc(70px + env(safe-area-inset-bottom));max-height:none}
+/* larger touch targets */
+body.touch #panel button{padding:9px 12px}
+body.touch #panel .chk input{width:20px;height:20px}
+body.touch input[type=range]{height:30px}
+body.touch input[type=range]::-webkit-slider-thumb{width:22px;height:22px;margin-top:-10px}
+body.touch input[type=range]::-moz-range-thumb{width:22px;height:22px}
+body.touch #gauge .node i{width:18px;height:18px}
 </style>
 </head>
 <body class="m0">
@@ -106,6 +168,11 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 </div>
 
 <aside id="panel" class="ui"></aside>
+<div id="tools" class="ui">
+  <button id="tPanel" title="Настройки" aria-label="Настройки"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+  <button id="tHide" title="Скрыть интерфейс (H)" aria-label="Скрыть интерфейс"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></svg></button>
+  <button id="tFull" title="Полный экран (F)" aria-label="Полный экран"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+</div>
 <div id="gauge" class="ui" style="display:none">
   <div class="rail"></div>
   <div class="node" data-d="0"><span>I · стекло</span><i></i></div>
@@ -137,6 +204,10 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 
 const $ = s => document.querySelector(s);
 const params = new URLSearchParams(location.search);
+const COARSE = params.has('touch') ? params.get('touch') !== '0' : matchMedia('(pointer: coarse)').matches || (navigator.maxTouchPoints > 0 && matchMedia('(hover: none)').matches);
+let VW = innerWidth, VH = innerHeight;
+let PASP = Math.min(2.1, Math.max(0.44, innerWidth / innerHeight));
+const aspDims = (long, asp) => asp >= 1 ? [long, long / asp] : [long * asp, long];
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const mix = (a, b, k) => a + (b - a) * k;
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -214,6 +285,7 @@ function program(name, vs, fs) {
     f(n, ...v) { const l = L(n); if (l) fns[v.length].call(gl, l, ...v); return this; },
     i(n, v) { const l = L(n); if (l) gl.uniform1i(l, v); return this; },
     m3(n, m) { const l = L(n); if (l) gl.uniformMatrix3fv(l, false, m); return this; },
+    v4a(n, a) { const l = L(n); if (l) gl.uniform4fv(l, a); return this; },
     m4(n, m) { const l = L(n); if (l) gl.uniformMatrix4fv(l, false, m); return this; },
     tex(n, unit, t) { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); const l = L(n); if (l) gl.uniform1i(l, unit); return this; },
   };
@@ -349,8 +421,11 @@ const FS_POD = FRAG(`
 uniform vec2 u_res; uniform float u_time;
 uniform vec3 u_ro; uniform mat3 u_cam; uniform float u_tanHalf;
 uniform vec3 u_lp; uniform vec3 u_ld;
-uniform float u_exposure; uniform float u_glow; uniform int u_steps;
-const float EL = 10.0; const float ER = 6.2; const float CELL = 2.9;
+uniform float u_exposure; uniform float u_glow; uniform int u_steps; uniform int u_refl;
+uniform vec3 u_cc; uniform mat3 u_crot; uniform float u_cs; uniform float u_cwet;
+#define NS 26
+uniform vec4 u_sd[NS]; uniform vec4 u_su[NS];
+const float EL = 10.0; const float ER = 6.2; const float CELL = 2.9; const float WY = -2.8; const float CZ = 2.0;
 
 float sdEgg(vec3 p){
   float k = 1.0 + 0.2*clamp(p.z/EL, -1.0, 1.0);
@@ -359,76 +434,203 @@ float sdEgg(vec3 p){
   return k0*(k0 - 1.0)/k1;
 }
 float wallD(vec3 p){ return -sdEgg(p)*0.8; }
+
+/* --- vertical corrugated tubes: stacked "beads", violet and thin white --- */
 vec4 tubeInfo(vec2 cid){
   vec2 h1 = hash22(cid + 0.37), h2 = hash22(cid*1.71 + 11.3);
   vec2 c = (cid + 0.5)*CELL + (h1 - 0.5)*CELL*0.42;
-  if (h2.x < 0.3 || abs(c.x) < 0.8) return vec4(0.0, 0.0, -1.0, 0.0);
-  float white = step(0.55, h2.y);
-  float r = white > 0.5 ? 0.05 + 0.05*h1.x : 0.17 + 0.16*h1.y;
+  // open corridor for the viewer; the +x side stays clear where the dive side-steps the crystal
+  if (h2.x < 0.2 || abs(c.x) < 1.8 || (c.x > 0.0 && c.x < 3.8 && abs(c.y - CZ) < 3.2)) return vec4(0.0, 0.0, -1.0, 0.0);
+  float white = step(0.64, h2.y);
+  float r = white > 0.5 ? 0.13 + 0.06*h1.x : 0.28 + 0.17*h1.y;
   return vec4(c, r, white);
 }
-float tubeD(vec3 p, vec4 ti, float s){
-  vec2 c = ti.xy;
-  c.x += 0.16*sin(p.y*0.33 + u_time*0.32 + s*6.283);
-  c.y += 0.12*cos(p.y*0.27 + u_time*0.27 + s*4.1);
-  float fr = mix(24.0, 38.0, ti.w);
-  float r = ti.z*(1.0 + mix(0.16, 0.24, ti.w)*sin((p.y + u_time*mix(0.16, 0.26, ti.w))*fr + s*20.0));
-  return (length(p.xz - c) - r)*0.72;
+vec2 bead(float y, vec4 ti, float s){
+  float per = ti.z*mix(1.2, 1.45, ti.w);
+  float u = fract((y + u_time*mix(0.07, 0.12, ti.w))/per + s)*2.0 - 1.0;
+  float a = abs(u);
+  float f = 1.0 - pow(a, 1.2);
+  float df = -2.4*pow(max(a, 1e-4), 0.2)*sign(u)/per;
+  return vec2(ti.z*(0.42 + 0.58*f), ti.z*0.58*df);
+}
+vec2 tubeC(vec4 ti, float y, float s){
+  return ti.xy + 0.05*vec2(sin(y*0.3 + u_time*0.3 + s*6.28), cos(y*0.25 + u_time*0.25 + s*4.0));
 }
 float tubes(vec3 p, out vec4 tinfo, out float tseed){
   vec2 base = floor(p.xz/CELL - 0.5);
-  float d = 1.1; tinfo = vec4(0.0, 0.0, -1.0, 0.0); tseed = 0.0;
+  float d = 1.2; tinfo = vec4(0.0, 0.0, -1.0, 0.0); tseed = 0.0;
   for (int j=0;j<2;j++) for (int i=0;i<2;i++){
     vec2 cid = base + vec2(float(i), float(j));
     vec4 ti = tubeInfo(cid);
     if (ti.z < 0.0) continue;
     float s = hash21(cid + 5.7);
-    float dd = tubeD(p, ti, s);
+    float rl = length(p.xz - tubeC(ti, p.y, s));
+    if ((rl - ti.z)*0.6 > d) continue;
+    float dd = (rl - bead(p.y, ti, s).x)*0.6;
     if (dd < d){ d = dd; tinfo = ti; tseed = s; }
   }
   return d;
 }
+
+/* --- quartz-like crystal cluster: hexagonal spikes radiating from a core --- */
+float crystal(vec3 p){
+  vec3 q = ((p - u_cc)*u_crot)/u_cs;
+  float b = length(q) - 1.02;
+  if (b > 0.2) return b*u_cs;
+  float d = length(q) - 0.2;
+  for (int i=0;i<NS;i++){
+    vec4 a = u_sd[i]; vec4 c = u_su[i];
+    float h = dot(q, a.xyz);
+    vec2 l = abs(vec2(dot(q, c.xyz), dot(q, cross(a.xyz, c.xyz))));
+    float hx = max(l.x*0.866 + l.y*0.5, l.y);
+    float r = c.w*clamp((a.w - h)/(c.w*2.6), 0.0, 1.0);
+    d = min(d, max(max(hx - r, -h), h - a.w)*0.72);
+  }
+  return d*u_cs;
+}
+vec3 crystalN(vec3 p){
+  const vec2 k = vec2(1.0, -1.0); float e = 0.004*u_cs;
+  return normalize(k.xyy*crystal(p + k.xyy*e) + k.yyx*crystal(p + k.yyx*e) + k.yxy*crystal(p + k.yxy*e) + k.xxx*crystal(p + k.xxx*e));
+}
+
+/* --- light: the viewer is the emitter; the far wall glows through --- */
 float lightAt(vec3 p){
   vec3 d = p - u_lp; float dist = length(d);
   float ca = dot(d/max(dist, 1e-3), u_ld);
-  float cone = smoothstep(0.78, 0.997, ca);
-  float spot = 0.03 + 0.97*cone*cone;
-  return spot*1.7/(1.0 + 0.008*dist*dist);
+  float cone = smoothstep(0.82, 0.998, ca);
+  return (0.08 + 0.45*smoothstep(0.35, 0.95, ca) + 1.1*cone*cone)/(1.0 + 0.003*dist*dist);
+}
+vec3 env(vec3 d){
+  float fz = d.z;
+  vec3 c = vec3(0.92, 0.5, 0.4)*0.4;
+  c *= 0.5 + 0.5*smoothstep(-0.7, 0.5, fz);
+  c += vec3(1.0, 0.7, 0.52)*pow(max(fz, 0.0), 6.0)*1.1;
+  c += vec3(1.0, 0.93, 0.8)*pow(max(fz, 0.0), 60.0)*2.2;
+  c *= 1.0 - 0.3*smoothstep(0.1, -0.7, d.y);
+  c *= 0.86 + 0.14*sin(atan(d.x, d.z)*18.0);
+  return c*(1.0 + u_glow*1.5);
 }
 vec3 wallN(vec3 p){
   vec2 e = vec2(0.02, 0.0);
   return normalize(vec3(wallD(p+e.xyy)-wallD(p-e.xyy), wallD(p+e.yxy)-wallD(p-e.yxy), wallD(p+e.yyx)-wallD(p-e.yyx)));
 }
-float veins(vec3 p, out float big){
+float veins(vec3 p, bool lite, out float big){
   vec3 q = p*0.3;
   q += 0.55*vec3(gnoise3(q*0.8), gnoise3(q*0.8 + 7.1), gnoise3(q*0.8 + 13.7));
-  float n1 = abs(gnoise3(q)), n2 = abs(gnoise3(q*2.6 + 3.3)), n3 = abs(gnoise3(q*6.8 + 9.1));
-  big = smoothstep(0.075, 0.018, n1);
-  float med = smoothstep(0.055, 0.012, n2), cap = smoothstep(0.04, 0.006, n3);
-  return clamp(big + med*0.7 + cap*0.38, 0.0, 1.0);
+  big = smoothstep(0.04, 0.009, abs(gnoise3(q)));
+  if (lite) return big;
+  float med = smoothstep(0.028, 0.006, abs(gnoise3(q*2.6 + 3.3)));
+  float cap = smoothstep(0.02, 0.003, abs(gnoise3(q*6.8 + 9.1)));
+  return clamp(big + med*0.7 + cap*0.4, 0.0, 1.0);
 }
-float caustic(vec2 p, float t){
-  vec2 q = p;
-  for (int i=0;i<3;i++){ float fi = float(i); q += 0.4*vec2(sin(q.y*1.3 + t*0.55 + fi*1.7), sin(q.x*1.5 - t*0.45 + fi*2.3)); }
-  float v = sin(q.x*2.2)*sin(q.y*2.2);
-  return pow(1.0 - abs(v), 5.0);
+vec2 voro(vec2 x){
+  vec2 n = floor(x), f = fract(x); float d1 = 8.0, d2 = 8.0;
+  for (int j=-1;j<=1;j++) for (int i=-1;i<=1;i++){
+    vec2 g = vec2(float(i), float(j));
+    vec2 r = g + hash22(n + g) - f; float d = dot(r, r);
+    if (d < d1){ d2 = d1; d1 = d; } else if (d < d2) d2 = d;
+  }
+  return vec2(sqrt(d1), sqrt(d2) - sqrt(d1));
 }
-vec3 shadeWall(vec3 p, vec3 n, vec3 rd){
+vec3 shadeWall(vec3 p, vec3 rd, bool lite){
+  vec3 n = wallN(p);
   float I = lightAt(p);
+  // wet cellular skin + concentric ridges around the axis
+  vec2 cell = lite ? vec2(0.5) : voro((abs(n.x) > abs(n.y) ? p.zy : p.xz)*6.5);
+  float edge = smoothstep(0.02, 0.14, cell.y);
+  float ring = sin(p.z*5.0 + 2.0*vnoise3(p*0.5));
+  vec3 g = lite ? vec3(0.0) : vec3(vnoise3(p*4.0), vnoise3(p*4.0 + 17.1), vnoise3(p*4.0 + 31.7)) - 0.5;
+  vec3 nd = normalize(n + g*0.4 + vec3(0.0, 0.0, 0.2*ring));
+  float big; float vm = veins(p, lite, big);
+  float thick = vnoise3(p*0.35 + 3.0);
+  vec3 skin = mix(vec3(1.0, 0.7, 0.56), vec3(0.97, 0.5, 0.42), thick);
   vec3 l = normalize(u_lp - p);
   float wrap = max(dot(n, l)*0.5 + 0.5, 0.0);
-  float thick = 0.5 + 0.9*vnoise3(p*0.33 + 3.0) + 0.35*vnoise3(p*1.3);
-  float big; float vm = veins(p, big);
-  vec3 trans = exp(-vec3(0.32, 1.85, 1.3)*thick);
-  float E = I*wrap;
-  vec3 col = trans*E*4.0 + vec3(1.0, 0.86, 0.84)*pow(E, 3.0)*1.6;
-  col += vec3(0.42, 0.05, 0.13)*0.07 + vec3(0.26, 0.06, 0.42)*0.06*(1.0 - smoothstep(0.0, 0.4, E));
-  vec3 vcol = mix(vec3(0.46, 0.05, 0.1), vec3(0.3, 0.12, 0.5), big);
-  col = mix(col, col*vcol*1.25 + vcol*0.02, vm*0.88);
-  col *= 1.0 + 0.25*caustic(p.xy*0.9 + p.z*0.35, u_time)*smoothstep(0.1, 0.6, E);
+  vec3 col = skin*(0.42 + I*wrap*1.4);
+  col += vec3(1.0, 0.9, 0.72)*pow(I*wrap, 2.5)*0.5;
+  float far = smoothstep(2.0, 9.8, p.z)*exp(-length(p.xy)*0.45);
+  col += vec3(1.0, 0.86, 0.66)*far*(0.55 + u_glow*3.0);
+  col *= 0.96 + 0.04*edge;
+  vec3 vc = mix(vec3(0.9, 0.14, 0.12), vec3(0.6, 0.08, 0.18), big);
+  col = mix(col, col*vc, vm*0.62);
+  float fr = 0.03 + 0.97*pow(1.0 - max(dot(-rd, nd), 0.0), 5.0);
+  col += env(reflect(rd, nd))*fr*0.55*(0.5 + 0.5*edge);
   vec3 h = normalize(l - rd);
-  col += vec3(1.0, 0.85, 0.9)*pow(max(dot(n, h), 0.0), 50.0)*0.3*I;
+  col += vec3(1.0, 0.92, 0.88)*pow(max(dot(nd, h), 0.0), 70.0)*I*1.1*edge;
   return col;
+}
+vec3 shadeTube(vec3 p, vec3 rd, vec4 ti, float s, bool lite){
+  vec2 rv = p.xz - tubeC(ti, p.y, s); vec2 rn = rv/max(length(rv), 1e-4);
+  vec2 bd = bead(p.y, ti, s);
+  vec3 n = normalize(vec3(rn.x, -bd.y, rn.y));
+  float w = ti.w;
+  float prof = (bd.x/ti.z - 0.42)/0.58;
+  vec3 alb = mix(vec3(0.40, 0.16, 0.86), vec3(1.0, 0.95, 0.93), w);
+  if (!lite) alb *= 0.95 + 0.1*hash31(floor(p*60.0));
+  float I = lightAt(p);
+  vec3 l = normalize(u_lp - p);
+  vec3 e = env(n);
+  // diffuse keeps the violet hue under the pink light
+  vec3 amb = mix(vec3(dot(e, vec3(0.3, 0.5, 0.2))), e, mix(0.35, 0.6, w))*mix(1.5, 2.1, w);
+  float cv = max(dot(-rd, n), 0.0);
+  vec3 col = alb*(amb + I*max(dot(n, l), 0.0)*1.4);
+  col += mix(vec3(0.5, 0.25, 1.0), vec3(1.0, 0.86, 0.9), w)*pow(1.0 - cv, 2.0)*0.22*(0.3 + I);
+  float ao = mix(0.42 + 0.58*prof, 0.68 + 0.32*prof, w);
+  col *= ao;
+  float fr = 0.04 + 0.96*pow(1.0 - cv, 5.0);
+  col += env(reflect(rd, n))*fr*mix(0.9, 0.6, w)*(0.5 + 0.5*ao);
+  vec3 h = normalize(l - rd);
+  col += vec3(1.0, 0.92, 1.0)*pow(max(dot(n, h), 0.0), mix(90.0, 40.0, w))*I*1.4;
+  return col;
+}
+vec3 shadeCrystal(vec3 p, vec3 rd){
+  vec3 n = crystalN(p);
+  vec3 q = ((p - u_cc)*u_crot)/u_cs;
+  float core = smoothstep(0.15, 0.9, length(q));
+  float cv = max(dot(-rd, n), 0.0);
+  float fr = 0.08 + 0.92*pow(1.0 - cv, 4.0);
+  vec3 rf = refract(rd, n, 0.66);
+  vec3 refr = env(dot(rf, rf) > 0.0 ? rf : reflect(rd, n));
+  vec3 refl = env(reflect(rd, n));
+  refr = mix(vec3(dot(refr, vec3(0.3, 0.5, 0.2))), refr, 0.3);
+  refl = mix(vec3(dot(refl, vec3(0.3, 0.5, 0.2))), refl, 0.45);
+  float facet = 0.75 + 0.25*sin(dot(n, vec3(12.0, 7.0, 9.0)));
+  vec3 col = refr*vec3(0.82, 0.83, 0.88)*core*facet + refl*fr*1.4 + vec3(0.62, 0.62, 0.67)*core*(0.55 + 0.45*facet);
+  vec3 l = normalize(u_lp - p); vec3 h = normalize(l - rd);
+  col += vec3(1.0)*pow(max(dot(n, h), 0.0), 120.0)*(lightAt(p)*2.0 + 0.4);
+  col *= mix(0.45, 1.0, core);
+  col += vec3(0.92, 0.92, 1.0)*pow(1.0 - cv, 3.0)*0.25;
+  return col;
+}
+
+/* --- shallow water pooled at the bottom of the capsule --- */
+float wave(vec2 q){
+  float h = 0.012*sin(q.x*3.1 + u_time*1.1) + 0.01*sin(q.y*4.3 - u_time*0.9 + q.x*1.3);
+  h += 0.02*(vnoise(q*2.2 + vec2(u_time*0.3, -u_time*0.2)) - 0.5);
+  float r = length(q - u_cc.xz);
+  h += u_cwet*0.03*sin(r*9.0 - u_time*5.0)*exp(-r*0.6);
+  return h;
+}
+vec3 waterN(vec3 p){
+  float e = 0.05, h0 = wave(p.xz);
+  return normalize(vec3(-(wave(p.xz + vec2(e, 0.0)) - h0)/e, 1.0, -(wave(p.xz + vec2(0.0, e)) - h0)/e));
+}
+vec3 traceLite(vec3 ro, vec3 rd){
+  float t = 0.05; int id = 0; vec4 ti = vec4(0.0); float ts = 0.0;
+  for (int i=0;i<56;i++){
+    vec3 p = ro + rd*t;
+    vec4 tt; float tss;
+    float dw = wallD(p), dtb = tubes(p, tt, tss), dc = crystal(p);
+    float d = min(dw, min(dtb, dc));
+    if (d < 0.004*t + 0.002){ id = d == dw ? 1 : (d == dtb ? 2 : 3); ti = tt; ts = tss; break; }
+    t += min(d, 1.5);
+    if (t > 40.0) break;
+  }
+  vec3 p = ro + rd*t;
+  if (id == 2) return shadeTube(p, rd, ti, ts, true);
+  if (id == 3) return shadeCrystal(p, rd);
+  if (id == 1) return shadeWall(p, rd, true);
+  return env(rd);
 }
 vec3 particles(vec3 ro, vec3 rd, float tmax){
   vec3 c = vec3(0.0); float sp = 1.05;
@@ -447,7 +649,7 @@ vec3 particles(vec3 ro, vec3 rd, float tmax){
     float size = 0.03 + 0.05*hash21(id + 9.0);
     float blur = clamp(1.4/tt, 0.0, 3.0);
     float s = smoothstep(size*(1.0 + blur*3.5), 0.0, length(f - cp))/(1.0 + blur*5.0);
-    c += s*lightAt(P)*vec3(1.0, 0.78, 0.84)*1.4;
+    c += s*lightAt(P)*vec3(1.0, 0.82, 0.8)*1.2;
   }
   return c;
 }
@@ -455,46 +657,43 @@ void main(){
   vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
   vec3 rd = normalize(u_cam*vec3(p*2.0*u_tanHalf, 1.0));
   vec3 ro = u_ro;
-  float t = 0.05; vec3 T = vec3(1.0); vec3 acc = vec3(0.0); float tHit = -1.0;
-  vec4 ti; float ts;
-  for (int i=0; i<200; i++){
+  float tW = rd.y < -1e-4 ? (WY - ro.y)/rd.y : 1e9;
+  float t = 0.03; int id = 0; vec4 ti = vec4(0.0); float ts = 0.0; vec3 scat = vec3(0.0);
+  for (int i=0; i<220; i++){
     if (i >= u_steps) break;
     vec3 pos = ro + rd*t;
-    float dw = wallD(pos);
-    if (dw < 0.005){ tHit = t; break; }
-    float dtb = tubes(pos, ti, ts);
-    float ad = abs(dtb);
-    float stepL = clamp(min(dw, ad*0.85 + 0.016), 0.016, 1.1);
-    float li = lightAt(pos);
-    if (ti.z > 0.0){
-      float w = ti.w;
-      float shell = exp(-ad*mix(30.0, 52.0, w));
-      float rib = 0.5 + 0.5*sin((pos.y + u_time*mix(0.16, 0.26, w))*mix(24.0, 38.0, w) + ts*20.0 + 1.3);
-      vec3 tc = mix(vec3(0.58, 0.3, 1.0), vec3(0.93, 0.91, 1.0), w);
-      acc += T*tc*shell*li*stepL*mix(4.2, 3.4, w)*(0.3 + 1.2*rib*rib);
-      T *= exp(-shell*stepL*mix(vec3(9.0, 12.0, 4.0), vec3(3.0), w));
-      if (dtb < 0.0){
-        vec3 ab = mix(vec3(1.25, 1.7, 0.3), vec3(0.22, 0.2, 0.16), w);
-        T *= exp(-ab*stepL);
-        acc += T*tc*li*stepL*mix(0.06, 0.2, w);
-      }
-    }
-    float turb = vnoise3(pos*0.5 + vec3(0.0, u_time*0.07, u_time*0.03));
-    acc += T*vec3(1.0, 0.42, 0.52)*li*(0.012 + 0.04*turb*turb)*stepL;
-    T *= exp(-vec3(0.022, 0.034, 0.03)*stepL);
-    t += stepL;
-    if (t > 45.0) break;
+    vec4 tt; float tss;
+    float dw = wallD(pos), dtb = tubes(pos, tt, tss), dc = crystal(pos);
+    float d = min(dw, min(dtb, dc));
+    if (d < 0.0015*t + 0.001){ id = d == dw ? 1 : (d == dtb ? 2 : 3); ti = tt; ts = tss; break; }
+    float st = min(d, 1.2);
+    scat += lightAt(pos)*st*(t > tW ? vec3(0.02, 0.008, 0.009) : vec3(0.011, 0.0055, 0.006));
+    t += st;
+    if (t > 48.0) break;
   }
-  if (tHit < 0.0){
-    for (int i=0;i<32;i++){ vec3 pos = ro + rd*t; float dw = wallD(pos); if (dw < 0.01){ tHit = t; break; } t += max(dw, 0.03); }
+  vec3 pos = ro + rd*t;
+  vec3 col;
+  if (id == 1) col = shadeWall(pos, rd, false);
+  else if (id == 2) col = shadeTube(pos, rd, ti, ts, false);
+  else if (id == 3) col = shadeCrystal(pos, rd);
+  else col = env(rd);
+  if (tW < t){
+    float depth = t - tW;
+    col = col*exp(-vec3(0.07, 0.15, 0.13)*depth) + vec3(0.4, 0.16, 0.12)*(1.0 - exp(-0.15*depth))*0.35;
+    vec3 wp = ro + rd*tW;
+    vec3 wn = waterN(wp);
+    float fr = 0.02 + 0.98*pow(1.0 - max(dot(-rd, wn), 0.0), 5.0);
+    vec3 rr = reflect(rd, wn); rr.y = abs(rr.y);
+    vec3 rc = u_refl > 0 ? traceLite(wp + wn*0.02, rr) : env(rr);
+    col = mix(col, rc, clamp(fr + 0.06, 0.0, 1.0));
+    col += vec3(1.0, 0.9, 0.85)*pow(max(dot(normalize(normalize(u_lp - wp) - rd), wn), 0.0), 200.0)*lightAt(wp)*2.0;
   }
-  vec3 col = acc;
-  if (tHit > 0.0){ vec3 pos = ro + rd*tHit; col += T*shadeWall(pos, wallN(pos), rd); }
-  col += particles(ro, rd, tHit > 0.0 ? tHit : 40.0);
+  col += scat;
+  col += particles(ro, rd, min(t, tW));
   col *= u_exposure*(1.0 + u_glow*1.4);
-  col += vec3(1.0, 0.78, 0.84)*u_glow*u_glow*0.35;
-  col = vec3(1.0) - exp(-col*1.25);
-  col = pow(col, vec3(0.9));
+  col += vec3(1.0, 0.8, 0.84)*u_glow*u_glow*0.35;
+  col = vec3(1.0) - exp(-col*1.05);
+  col = pow(col, vec3(0.95));
   o = vec4(col, 1.0);
 }`);
 
@@ -678,6 +877,7 @@ vec3 scene(int id, vec2 p, float t){
 }
 void main(){
   vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
+  p *= clamp(0.9*u_res.y/u_res.x, 1.0, 1.5);
   float t = u_time;
   vec2 w = vec2(fbm3(p*1.8 + t*0.07), fbm3(p*1.8 + vec2(5.2, 1.3) - t*0.06)) - 0.5;
   float m = u_mix; float melt = sin(PI*m);
@@ -760,7 +960,7 @@ const FS_DIVE = FRAG(`
 uniform sampler2D u_l1; uniform sampler2D u_l2; uniform sampler2D u_l3;
 uniform vec2 u_res; uniform float u_time; uniform mat3 u_cam; uniform float u_tanHalf; uniform vec2 u_head;
 uniform float u_glassDist; uniform float u_glassH; uniform float u_podVis; uniform float u_passFog; uniform float u_flash;
-uniform float u_dreamDist; uniform float u_dreamVis; uniform float u_voidVis; uniform float u_speed;
+uniform float u_dreamDist; uniform float u_dreamVis; uniform float u_voidVis; uniform float u_speed; uniform float u_fasp;
 void main(){
   vec2 suv = v_uv;
   vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
@@ -779,7 +979,7 @@ void main(){
   if (u_dreamVis > 0.0){
     float t = u_dreamDist/rd.z;
     vec2 hp = (rd*t).xy + u_head*0.5;
-    vec2 hs = vec2(0.8, 0.5);
+    vec2 hs = vec2(0.5*u_fasp, 0.5);
     vec2 uv = hp/(2.0*hs) + 0.5;
     vec2 q = abs(hp) - hs;
     float ed = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
@@ -795,7 +995,7 @@ void main(){
   if (u_glassDist > 0.01){
     float t = u_glassDist/rd.z;
     vec2 hp = (rd*t).xy + u_head;
-    vec2 uv = hp/vec2(u_glassH*1.6, u_glassH) + 0.5;
+    vec2 uv = hp/vec2(u_glassH*u_fasp, u_glassH) + 0.5;
     float lod = clamp(2.6 - u_glassDist*2.0, 0.0, 4.5);
     vec4 f = textureLod(u_l1, uv, lod);
     f *= smoothstep(0.0, 0.07, min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y)));
@@ -818,7 +1018,7 @@ void main(){
 const FS_SLEEP = FRAG(`
 uniform sampler2D u_l1; uniform sampler2D u_l2; uniform sampler2D u_l3;
 uniform vec2 u_res; uniform float u_time; uniform float u_S; uniform float u_lid;
-uniform float u_after; uniform float u_echo; uniform float u_jerk;
+uniform float u_after; uniform float u_echo; uniform float u_jerk; uniform float u_fasp;
 vec3 phosphenes(vec2 p, float t){
   float n1 = fbm(p*2.6 + vec2(t*0.05, -t*0.03));
   float n2 = fbm(p*5.0 - vec2(t*0.04, t*0.06) + n1*2.2);
@@ -833,7 +1033,7 @@ void main(){
   vec2 suv = v_uv;
   vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
   float S = u_S;
-  vec2 fuv = coverUV(suv, u_res, 1.6);
+  vec2 fuv = coverUV(suv, u_res, u_fasp);
   float drowsy = smoothstep(0.04, 0.34, S);
   vec4 fog = textureLod(u_l1, fuv, drowsy*1.6);
   vec3 awake = nightSky(p, u_time)*(1.0 - fog.a*0.85) + fog.rgb*(1.0 + drowsy*0.25);
@@ -882,7 +1082,7 @@ void main(){
 /* ---------- Mode D : attention lens ---------- */
 const FS_LENS = FRAG(`
 uniform sampler2D u_l1; uniform sampler2D u_l2; uniform sampler2D u_l3;
-uniform vec2 u_res; uniform float u_time; uniform vec2 u_c; uniform float u_r; uniform float u_inner; uniform vec2 u_par;
+uniform vec2 u_res; uniform float u_time; uniform vec2 u_c; uniform float u_r; uniform float u_inner; uniform vec2 u_par; uniform float u_fasp;
 vec2 toUV(vec2 p){ float asp = u_res.x/u_res.y; return vec2(p.x/asp, p.y) + 0.5; }
 void main(){
   vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
@@ -890,7 +1090,7 @@ void main(){
   float r1 = u_r, r2 = u_r*u_inner;
   float push = smoothstep(r1*1.9, r1*0.95, r);
   vec2 pf = p - dir*push*r1*0.38;
-  vec4 fog = texture(u_l1, coverUV(toUV(pf), u_res, 1.6));
+  vec4 fog = texture(u_l1, coverUV(toUV(pf), u_res, u_fasp));
   float ang = atan(d.y, d.x); vec2 cs = vec2(cos(ang), sin(ang));
   float ridge = exp(-pow((r - r1*1.1)/(r1*0.13), 2.0))*(0.3 + 0.5*fbm(cs*2.5 + vec2(r*9.0, u_time*0.05)));
   vec3 outer = nightSky(p, u_time)*(1.0 - fog.a*0.85) + fog.rgb + vec3(0.88, 0.92, 1.0)*ridge*0.55;
@@ -1020,6 +1220,7 @@ const PREP = FIGS.map(def => {
   return { name: def.n, digit: !!def.d, strokes, total, anchors };
 });
 
+const PRE = 0.4;
 class FogLayer {
   constructor(w, h) {
     this.w = w; this.h = h;
@@ -1028,7 +1229,8 @@ class FogLayer {
     this.figs = []; this.recent = []; this.next = 0;
     this.target = 4; this.gaze = null; this.gazeBias = 0; this.enabled = true; this.rate = 1;
     this.stars = [];
-    for (let i = 0; i < 240; i++) this.stars.push({ x: Math.random() * w, y: Math.random() * h, r: 0.6 + Math.random() * 1.1, b: 0.1 + Math.pow(Math.random(), 2) * 0.5, f: 0.5 + Math.random() * 2.5, ph: Math.random() * 7 });
+    const ns = Math.round(240 * w * h / (1280 * 800));
+    for (let i = 0; i < ns; i++) this.stars.push({ x: Math.random() * w, y: Math.random() * h, r: 0.6 + Math.random() * 1.1, b: 0.1 + Math.pow(Math.random(), 2) * 0.5, f: 0.5 + Math.random() * 2.5, ph: Math.random() * 7 });
     this.tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -1040,7 +1242,7 @@ class FogLayer {
     const pool = PREP.map((_, i) => i).filter(i => !this.figs.some(f => f.id === i) && !this.recent.includes(i));
     if (!pool.length) return false;
     const id = pool[(Math.random() * pool.length) | 0], def = PREP[id];
-    const s = this.h * (0.30 + Math.random() * 0.11);
+    const s = Math.min(this.w, this.h) * (0.30 + Math.random() * 0.11);
     let cx, cy, ok = false;
     for (let k = 0; k < 40 && !ok; k++) {
       if (this.gaze && Math.random() < this.gazeBias) {
@@ -1060,18 +1262,17 @@ class FogLayer {
     });
     const anchors = def.anchors.map(a => { const q = T(a.x, a.y); return { x: q[0], y: q[1], u: a.u }; });
     this.figs.push({ id, cx, cy, s, strokes, anchors, t0: t - back, seed: Math.random() * 100,
-      drawDur: 1.7 + def.total * 0.0042, hold: 3.2 + Math.random() * 2.2, fadeDur: 2.8 });
+      drawDur: (1.7 + def.total * 0.0042) * 0.5, hold: 3.2 + Math.random() * 2.2, fadeDur: 2.8 });
     this.recent.push(id); if (this.recent.length > 8) this.recent.shift();
     return true;
   }
   prewarm(t) { const backs = [7.5, 4.2, 1.6]; for (const b of backs) this.spawn(t, b); }
   life(F, t) {
     const a = t - F.t0;
-    const p = clamp((a - 0.7) / F.drawDur);
-    const fade = clamp((a - 0.7 - F.drawDur - F.hold) / F.fadeDur);
-    return { a, p, fade, fresh: 1 - smooth(0, 1, fade), inten: 1 - fade * fade, glint: clamp(a / 0.7), done: fade >= 1 };
+    const p = clamp((a - PRE) / F.drawDur);
+    const fade = clamp((a - PRE - F.drawDur - F.hold) / F.fadeDur);
+    return { a, p, fade, fresh: 1 - smooth(0, 1, fade), inten: 1 - fade * fade, glint: clamp(a / PRE), done: fade >= 1 };
   }
-  fadeAll(t) { for (const F of this.figs) { const L = this.life(F, t); if (L.fade <= 0) { const need = 0.7 + F.drawDur + F.hold; F.hold = Math.max(0, (t - F.t0) - 0.7 - F.drawDur); if (L.p < 1) { F.drawDur = Math.max(0.01, (t - F.t0) - 0.7); F.hold = 0; } void need; } } }
   update(t) {
     this.figs = this.figs.filter(F => !this.life(F, t).done);
     if (this.enabled && t > this.next && this.figs.length < this.target) {
@@ -1097,8 +1298,8 @@ class FogLayer {
       }
       if (L.p <= 0) continue;
       const wob = (x, y, u) => {
-        const age = t - (F.t0 + 0.7 + u * F.drawDur);
-        const amp = 1.2 + 5 * Math.exp(-Math.max(0, age) * 1.6);
+        const age = t - (F.t0 + PRE + u * F.drawDur);
+        const amp = 1.2 + 5 * Math.exp(-Math.max(0, age) * 2.4);
         return [x + amp * Math.sin(y * 0.045 + t * 0.7 + F.seed), y - lift + amp * Math.cos(x * 0.05 + t * 0.6 + F.seed * 1.3)];
       };
       const pts = [];
@@ -1141,22 +1342,26 @@ class FogLayer {
    ===================================================================== */
 const MODES = [
   { title: 'А · Стопка стёкол', desc: 'Три прозрачных экрана нанизаны на луч взгляда: ближний меньше и ниже, дальний больше и выше. Это модель снаружи. Сведите слои — и они сольются в одно восприятие.',
-    hint: 'тяните — облёт · колесо — ближе/дальше · клик по слою — фокус · двойной клик — глазами наблюдателя · Esc — обзор' },
+    hint: 'тяните — облёт · колесо — ближе/дальше · клик по слою — фокус · двойной клик — глазами наблюдателя · Esc — обзор',
+    touch: 'проведите — облёт · щипок — ближе/дальше · тап по слою — фокус · двойной тап — глазами наблюдателя' },
   { title: 'Б · Погружение', desc: 'От первого лица: вы — источник света. Сквозь стекло с туманными образами — внутрь капсулы из кожи, между трубками — сквозь дальнюю стенку в плоское гипнагогическое кино.',
-    hint: 'колесо / ↑↓ / перетаскивание — глубина · мышь — взгляд и наклон головы · пробел — авто' },
+    hint: 'колесо / ↑↓ / тяните вверх-вниз — глубина · мышь — взгляд и наклон головы · пробел — авто',
+    touch: 'проведите вверх — глубже, вниз — назад · ведите пальцем в стороны — взгляд' },
   { title: 'В · Засыпание', desc: 'Слои как фазы во времени в одной точке взгляда: бодрствование → веки смыкаются, свет проходит сквозь кожу → темнота, фосфены → гипнагогия. Вздрагивание возвращает образы на стекло.',
-    hint: 'удерживайте пробел или кнопку мыши — закрыть глаза · отпустите — проснуться · курсор — куда смотрит внимание' },
+    hint: 'удерживайте пробел или кнопку мыши — закрыть глаза · отпустите — проснуться · курсор — куда смотрит внимание',
+    touch: 'удерживайте палец на экране — закрыть глаза · отпустите — проснуться' },
   { title: 'Г · Линза внимания', desc: 'Все слои в одной плоскости. Внимание прорезает их как линза: снаружи — туман на стекле, в кольце — капсула, в центре — сновидение. Движение взгляда даёт параллакс глубины.',
-    hint: 'мышь — направить внимание · колесо — размер линзы · удерживайте кнопку — глубже · пробел — блуждание' },
+    hint: 'мышь — направить внимание · колесо — размер линзы · удерживайте кнопку — глубже · пробел — блуждание',
+    touch: 'ведите пальцем — направить внимание · щипок — размер линзы · удержание — глубже' },
 ];
 const S = {
   mode: clamp((+params.get('mode') || 1) - 1, 0, 3) | 0,
   pending: -1, queued: -1, blinkT: 0, blink: 0, blinkCb: null,
   time: +(params.get('t') || 0), frozen: params.has('freeze'),
-  Q: params.has('q') ? clamp(+params.get('q'), 0.25, 1.5) : 0.9, adaptive: !params.has('q'), ema: 16, qTimer: 0,
-  mouse: { x: innerWidth / 2, y: innerHeight / 2, down: false, sx: 0, sy: 0, moved: false, last: -1e9 },
+  Q: params.has('q') ? clamp(+params.get('q'), 0.25, 1.5) : (COARSE ? 0.6 : 0.9), adaptive: !params.has('q'), ema: 16, qTimer: 0,
+  mouse: { x: VW / 2, y: VH / 2, down: false, sx: 0, sy: 0, moved: false, last: -1e9, touch: false },
   legend: [1, 0, 0],
-  A: { explode: 1, explodeV: 1, yaw: 0.9, pitch: 0.16, dist: 14, view: 'orbit', focus: -1, auto: true, hover: -1,
+  A: { explode: 1, explodeV: 1, yaw: 0.9, pitch: 0.16, dist: 14, touched: false, portrait: false, view: 'orbit', focus: -1, auto: true, hover: -1,
        hoverV: [0, 0, 0], alphaV: [1, 1, 1], cam: null, panels: [], vp: null },
   B: { D: 0, Dt: 0, auto: true, hold: 0, speed: 0, look: [0, 0] },
   C: { S: 0.03, St: 0.03, auto: true, tau: 0, holding: false, manual: false, lid: 0, blink: 0, nextBlink: 2, blinkPh: -1,
@@ -1168,8 +1373,7 @@ if (params.has('S')) { S.C.St = S.C.S = clamp(+params.get('S')); S.C.auto = fals
 if (params.has('ex')) { S.A.explode = S.A.explodeV = clamp(+params.get('ex')); }
 if (params.has('view')) { S.A.view = params.get('view'); S.A.focus = +(params.get('focus') || -1); }
 
-const fog = new FogLayer(1280, 800);
-fog.prewarm(S.time);
+let fog = null;
 let L1 = null, L2 = null, L3 = null, SCN = null;
 
 /* =====================================================================
@@ -1186,10 +1390,11 @@ function updatePanels() {
   A.panels = [0, 1, 2].map(i => {
     const d = mix(DCOL[i], DEXP[i], A.explodeV);
     const c = V.add(EYE, V.mul(AX, d));
-    const hh = d * HALF, hw = hh * 1.6;
+    const hh = d * HALF, hw = hh * PASP;
     return { d, c, hh, hw, r: PR, u: PU, n: V.mul(AX, -1) };
   });
 }
+const orbitTarget = () => S.A.portrait ? V.add(V.add(EYE, V.mul(AX, 5.4)), [0, 0.75, 0]) : V.add(V.add(EYE, V.mul(AX, 6.2)), [0.6, -0.1, 0]);
 function camDesired() {
   const A = S.A;
   if (A.view === 'eye') {
@@ -1201,14 +1406,15 @@ function camDesired() {
     const dist = pn.hh / Math.tan(fov / 2) * 1.2;
     return { pos: V.add(V.add(pn.c, V.mul(AX, -dist)), V.add(V.mul(PR, 0.12 * dist), V.mul(PU, 0.05 * dist))), target: pn.c, fov };
   }
-  const tc = V.add(V.add(EYE, V.mul(AX, 6.2)), [0.6, -0.1, 0]);
+  const tc = orbitTarget();
   const cp = Math.cos(A.pitch);
-  return { pos: V.add(tc, V.mul([Math.sin(A.yaw) * cp, Math.sin(A.pitch), Math.cos(A.yaw) * cp], A.dist)), target: tc, fov: 0.8 };
+  const asp = VW / VH, fov = 2 * Math.atan(Math.tan(0.4) * Math.pow(Math.max(1, 1.05 / asp), 0.6));
+  return { pos: V.add(tc, V.mul([Math.sin(A.yaw) * cp, Math.sin(A.pitch), Math.cos(A.yaw) * cp], A.dist)), target: tc, fov };
 }
 function camRay(cam, mx, my) {
   const f = V.norm(V.sub(cam.target, cam.pos)), r = V.norm(V.cross(f, [0, 1, 0])), u = V.cross(r, f);
-  const th = Math.tan(cam.fov / 2), asp = innerWidth / innerHeight;
-  const nx = mx / innerWidth * 2 - 1, ny = 1 - my / innerHeight * 2;
+  const th = Math.tan(cam.fov / 2), asp = VW / VH;
+  const nx = mx / VW * 2 - 1, ny = 1 - my / VH * 2;
   return V.norm(V.add(f, V.add(V.mul(r, nx * th * asp), V.mul(u, ny * th))));
 }
 function pickPanel(mx, my) {
@@ -1238,7 +1444,7 @@ const LABELS = [
   ['I', 'Туман на стекле', 'парейдолия: образы сквозь точки-камни', 'var(--l1)'],
   ['II', 'Капсула · эпифиз', 'свет изнутри сквозь воду и кожу', 'var(--l2)'],
   ['III', 'Гипнагогия', 'плоское кино засыпания', 'var(--l3)'],
-  ['◉', 'Наблюдатель', 'источник света / точка взгляда', '#ffe6c8'],
+  ['•', 'Наблюдатель', 'источник света / точка взгляда', '#ffe6c8'],
 ].map(([n, t, s, c]) => {
   const el = document.createElement('div'); el.className = 'plabel'; el.style.setProperty('--c', c);
   el.innerHTML = `<b>${n}</b>${t}<small>${s}</small>`; labelsEl.appendChild(el); return el;
@@ -1288,7 +1494,8 @@ function updateB(dt, t) {
   }
   const prev = B.D; B.D += (B.Dt - B.D) * damp(dt, 2.2);
   B.speed = mix(B.speed, Math.abs(B.D - prev) / Math.max(dt, 1e-3) * 4, damp(dt, 5));
-  const mx = S.mouse.x / innerWidth - .5, my = S.mouse.y / innerHeight - .5;
+  const M = S.mouse;
+  const mx = M.touch ? (M.down ? M.x / VW - .5 : 0) : M.x / VW - .5, my = M.touch ? 0 : M.y / VH - .5;
   B.look[0] += (mx - B.look[0]) * damp(dt, 2.5); B.look[1] += (my - B.look[1]) * damp(dt, 2.5);
   const D = B.D;
   S.legend = [1 - smooth(0.75, 1.0, D), smooth(0.8, 1.05, D) * (1 - smooth(2.05, 2.3, D)), smooth(2.1, 2.4, D)];
@@ -1321,23 +1528,23 @@ function updateC(dt, t) {
   C.after *= Math.exp(-dt * 0.35); C.echo *= Math.exp(-dt * 0.28); C.jerk *= Math.exp(-dt * 5);
   fog.target = C.S < 0.34 ? Math.round(2 + smooth(0.02, 0.3, C.S) * 3) : 0;
   fog.enabled = C.S < 0.3; fog.rate = 1 + C.S * 3; fog.gazeBias = 0.75;
-  const u = coverJS(S.mouse.x / innerWidth, 1 - S.mouse.y / innerHeight, 1.6);
+  const u = coverJS(S.mouse.x / VW, 1 - S.mouse.y / VH, PASP);
   fog.gaze = [u[0] * fog.w, (1 - u[1]) * fog.h];
   S.legend = [1 - smooth(0.2, 0.4, C.S), smooth(0.25, 0.45, C.S) * (1 - smooth(0.6, 0.78, C.S)), smooth(0.7, 0.95, C.S)];
 }
 function updateD(dt, t) {
-  const D = S.D, asp = innerWidth / innerHeight;
+  const D = S.D, asp = VW / VH;
   const idle = (performance.now() - S.mouse.last) > 3000;
   let tg;
   if (D.auto && idle) tg = [0.42 * asp * 0.5 * Math.sin(t * 0.21), 0.26 * Math.sin(t * 0.29 + 1.0)];
-  else tg = [(S.mouse.x - innerWidth / 2) / innerHeight, (innerHeight / 2 - S.mouse.y) / innerHeight];
+  else tg = [(S.mouse.x - VW / 2) / VH, (VH / 2 - S.mouse.y) / VH];
   const k = damp(dt, idle ? 1.2 : 7);
   D.c[0] += (tg[0] - D.c[0]) * k; D.c[1] += (tg[1] - D.c[1]) * k;
   D.inner += ((D.holding ? 0.9 : D.innerBase) - D.inner) * damp(dt, 2.5);
   S.legend = [0.8, 0.8, 0.8];
 }
 function coverJS(sx, sy, ta) {
-  const sa = innerWidth / innerHeight; let x = sx - .5, y = sy - .5;
+  const sa = VW / VH; let x = sx - .5, y = sy - .5;
   if (sa > ta) y *= ta / sa; else x *= sa / ta;
   return [x + .5, y + .5];
 }
@@ -1352,11 +1559,12 @@ function dreamParams(t) {
   return { a: DREAM_ORDER[((k % n) + n) % n], b: DREAM_ORDER[(((k + 1) % n) + n) % n], m: smooth(dur - tr, dur, loc) };
 }
 function layerDims() {
-  const W = innerWidth, H = innerHeight, q = S.Q;
-  const cap = (w, h, s) => { const k = Math.min(1, 1500 / w); return [w * s * k, h * s * k]; };
-  if (S.mode === 0) return { l2: [1000 * q, 625 * q], l3: [880 * q, 550 * q] };
-  if (S.mode === 1) return { l2: cap(W, H, 0.62 * q), l3: [960 * q, 600 * q] };
-  return { l2: cap(W, H, 0.6 * q), l3: cap(W, H, 0.6 * q) };
+  const W = VW, H = VH, q = S.Q;
+  // pixel budget instead of CSS size, so phones are not starved and 4K screens are not overpaid
+  const fit = px => { const a = W / H; return [Math.sqrt(px * a), Math.sqrt(px / a)]; };
+  if (S.mode === 0) return { l2: aspDims(1000 * q, PASP), l3: aspDims(880 * q, PASP) };
+  if (S.mode === 1) return { l2: fit(440000 * q * q), l3: aspDims(960 * q, PASP) };
+  return { l2: fit(400000 * q * q), l3: fit(400000 * q * q) };
 }
 function renderFog(t) {
   fog.update(t); fog.draw(t);
@@ -1364,12 +1572,42 @@ function renderFog(t) {
   P.fog.use().tex('u_src', 0, fog.tex).f('u_time', t).f('u_res', L1.w, L1.h);
   drawFS(); mipmap(L1);
 }
+/* crystal cluster: spike directions/lengths are fixed, pose animates */
+const NS = 26, SPK_D = new Float32Array(NS * 4), SPK_U = new Float32Array(NS * 4);
+(() => {
+  let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < NS; i++) {
+    const y = 1 - 2 * (i + 0.5) / NS, r = Math.sqrt(1 - y * y), ph = i * 2.39996 + rnd() * 0.6;
+    const d = V.norm([Math.cos(ph) * r + (rnd() - .5) * .3, y + (rnd() - .5) * .3, Math.sin(ph) * r + (rnd() - .5) * .3]);
+    const long = i % 4 === 1;
+    const u0 = V.norm(V.cross(d, Math.abs(d[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0]));
+    const ro = rnd() * 6.283, u = V.add(V.mul(u0, Math.cos(ro)), V.mul(V.cross(d, u0), Math.sin(ro)));
+    SPK_D.set([d[0], d[1], d[2], long ? 0.86 + rnd() * 0.14 : 0.42 + rnd() * 0.34], i * 4);
+    SPK_U.set([u[0], u[1], u[2], long ? 0.085 + rnd() * 0.02 : 0.05 + rnd() * 0.035], i * 4);
+  }
+})();
+const WATER_Y = -2.8, CRYSTAL_Z = 2.0;
+function crystalState(t) {
+  const k = ((t / 46 + 0.33) % 1 + 1) % 1;
+  const y = mix(7.4, -7.4, k);
+  const a = t * 0.12, b = 0.3 + 0.35 * Math.sin(t * 0.07);
+  const c = Math.cos(a), s = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b);
+  return {
+    c: [0.15 * Math.sin(t * 0.21), y, CRYSTAL_Z + 0.2 * Math.sin(t * 0.17)],
+    rot: new Float32Array([c, 0, -s, s * sb, cb, c * sb, s * cb, -sb, c * cb]),
+    wet: smooth(2.4, 0, Math.abs(y - WATER_Y)),
+  };
+}
+const portraitK = a => a < 1 ? clamp(Math.sqrt(0.9 / a), 1, 1.4) : 1;
 function renderPod(t, cam) {
   bind(L2);
-  const steps = Math.round(mix(70, 150, clamp((S.Q - 0.35) / 0.65)));
+  const steps = Math.round(mix(64, 150, clamp((S.Q - 0.35) / 0.65)));
+  const cs = crystalState(t);
   const lp = V.add(cam.ro, V.add(V.mul(cam.b.r, 0.3), V.add(V.mul(cam.b.u, 0.2), V.mul(cam.b.f, -0.3))));
   P.pod.use().f('u_res', L2.w, L2.h).f('u_time', t).f('u_ro', ...cam.ro).m3('u_cam', cam.b.m).f('u_tanHalf', cam.th)
-    .f('u_lp', ...lp).f('u_ld', ...cam.b.f).f('u_exposure', cam.exp || 1).f('u_glow', cam.glow || 0).i('u_steps', steps);
+    .f('u_lp', ...lp).f('u_ld', ...cam.b.f).f('u_exposure', cam.exp || 1).f('u_glow', cam.glow || 0).i('u_steps', steps)
+    .i('u_refl', S.Q >= 0.5 ? 1 : 0).f('u_cc', ...cs.c).m3('u_crot', cs.rot).f('u_cs', 1.55).f('u_cwet', cs.wet)
+    .v4a('u_sd', SPK_D).v4a('u_su', SPK_U);
   drawFS(); mipmap(L2);
 }
 function renderDream(t) {
@@ -1385,14 +1623,17 @@ function podCam(t) {
     const yaw = B.look[0] * 0.5 + 0.02 * Math.sin(t * 0.3), pitch = -B.look[1] * 0.32 + 0.015 * Math.sin(t * 0.45);
     const head = [B.look[0] * 0.35 + 0.03 * Math.sin(t * 0.9), -B.look[1] * 0.22 + 0.04 * Math.sin(t * 0.45)];
     const path = [0.3 * Math.sin(B.D * 2.1), 0.22 * Math.sin(B.D * 1.3 + 0.5)];
-    return { ro: [head[0] + path[0], head[1] + path[1], bp.z], b: basis(yaw, pitch), th: 0.56, glow: bp.glow, exp: bp.exp, head, bp };
+    // side-step so the first-person path never flies through the sinking crystal
+    const cs = crystalState(t);
+    const dodge = 2.3 * Math.exp(-Math.pow((bp.z - cs.c[2]) / 2.0, 2)) * Math.exp(-Math.pow((cs.c[1] - 0.1) / 2.3, 2));
+    return { ro: [head[0] + path[0] + dodge, head[1] + path[1], bp.z], b: basis(yaw, pitch), th: 0.56 * portraitK(VW / VH), glow: bp.glow, exp: bp.exp, head, bp };
   }
   if (m === 3) {
     const c = S.D.c;
-    return { ro: [c[0] * 1.3 + 0.2 * Math.sin(t * 0.1), c[1] * 1.0, -7.3], b: basis(-c[0] * 0.1, -c[1] * 0.08), th: 0.6 };
+    return { ro: [c[0] * 1.3 + 0.2 * Math.sin(t * 0.1), c[1] * 1.0, -7.3], b: basis(-c[0] * 0.1, -c[1] * 0.08), th: 0.6 * portraitK(VW / VH) };
   }
   const drift = [0.35 * Math.sin(t * 0.09), 0.18 * Math.sin(t * 0.13), m === 0 ? -7.5 : -7.2];
-  return { ro: drift, b: basis(0.05 * Math.sin(t * 0.07), 0.03 * Math.sin(t * 0.11)), th: m === 0 ? 0.58 : 0.6 };
+  return { ro: drift, b: basis(0.05 * Math.sin(t * 0.07), 0.03 * Math.sin(t * 0.11)), th: (m === 0 ? 0.58 : 0.6) * portraitK(m === 0 ? PASP : VW / VH) };
 }
 
 function renderA(t) {
@@ -1424,7 +1665,7 @@ function renderA(t) {
     const pn = A.panels[i];
     P.panel.use().m4('u_vp', vp).f('u_c', ...pn.c).f('u_r', ...V.mul(PR, pn.hw)).f('u_u', ...V.mul(PU, pn.hh))
       .i('u_kind', i).f('u_hover', A.hoverV[i]).f('u_alpha', A.alphaV[i]).f('u_time', t).f('u_camPos', ...A.cam.pos)
-      .f('u_n', ...pn.n).f('u_asp', 1.6).f('u_see', mix(0.5, 1.0, A.explodeV)).tex('u_tex', 0, texs[i]);
+      .f('u_n', ...pn.n).f('u_asp', PASP).f('u_see', mix(0.5, 1.0, A.explodeV)).tex('u_tex', 0, texs[i]);
     gl.bindVertexArray(QUAD.va); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   // frustum edges + observer
@@ -1444,12 +1685,12 @@ function renderA(t) {
   // labels
   const show = S.mode === 0 && S.pending < 0 ? 1 : 0;
   A.panels.forEach((pn, i) => {
-    const q = project(vp, V.add(pn.c, V.add(V.mul(PR, -pn.hw), V.mul(PU, pn.hh * 1.0))), innerWidth, innerHeight);
+    const q = project(vp, V.add(pn.c, V.add(V.mul(PR, -pn.hw), V.mul(PU, pn.hh * 1.0))), VW, VH);
     const el = LABELS[i];
     el.style.transform = `translate(${q.x + 14}px, ${q.y - 40}px)`;
     el.style.opacity = show && q.ok ? (0.35 + 0.65 * A.alphaV[i]) * (A.explodeV > 0.25 ? 1 : 0.2) : 0;
   });
-  const qe = project(vp, EYE, innerWidth, innerHeight);
+  const qe = project(vp, EYE, VW, VH);
   LABELS[3].style.transform = `translate(${qe.x + 22}px, ${qe.y + 6}px)`;
   LABELS[3].style.opacity = show && qe.ok && A.view !== 'eye' ? 0.85 : 0;
 }
@@ -1458,7 +1699,7 @@ function renderB(t, cam) {
   bind(SCN);
   P.dive.use().tex('u_l1', 0, L1.tex).tex('u_l2', 1, L2.tex).tex('u_l3', 2, L3.tex)
     .f('u_res', SCN.w, SCN.h).f('u_time', t).m3('u_cam', cam.b.m).f('u_tanHalf', cam.th).f('u_head', cam.head[0], cam.head[1])
-    .f('u_glassDist', bp.glassDist).f('u_glassH', 2.9).f('u_podVis', bp.podVis).f('u_passFog', bp.passFog).f('u_flash', bp.flash)
+    .f('u_glassDist', bp.glassDist).f('u_glassH', 2.9 * cam.th / 0.56).f('u_fasp', PASP).f('u_podVis', bp.podVis).f('u_passFog', bp.passFog).f('u_flash', bp.flash)
     .f('u_dreamDist', bp.dreamDist).f('u_dreamVis', bp.dreamVis).f('u_voidVis', bp.voidVis).f('u_speed', S.B.speed);
   drawFS();
 }
@@ -1467,15 +1708,15 @@ function renderC(t) {
   bind(SCN);
   P.sleep.use().tex('u_l1', 0, L1.tex).tex('u_l2', 1, L2.tex).tex('u_l3', 2, L3.tex)
     .f('u_res', SCN.w, SCN.h).f('u_time', t).f('u_S', C.S).f('u_lid', Math.max(C.lid, C.blink))
-    .f('u_after', C.after).f('u_echo', C.echo).f('u_jerk', C.jerk);
+    .f('u_after', C.after).f('u_echo', C.echo).f('u_jerk', C.jerk).f('u_fasp', PASP);
   drawFS();
 }
 function renderD(t) {
   const D = S.D;
   bind(SCN);
   P.lens.use().tex('u_l1', 0, L1.tex).tex('u_l2', 1, L2.tex).tex('u_l3', 2, L3.tex)
-    .f('u_res', SCN.w, SCN.h).f('u_time', t).f('u_c', D.c[0], D.c[1]).f('u_r', D.r).f('u_inner', D.inner)
-    .f('u_par', -D.c[0] * 0.12, -D.c[1] * 0.12);
+    .f('u_res', SCN.w, SCN.h).f('u_time', t).f('u_c', D.c[0], D.c[1]).f('u_r', D.r * Math.min(1, VW / VH * 1.25)).f('u_inner', D.inner)
+    .f('u_par', -D.c[0] * 0.12, -D.c[1] * 0.12).f('u_fasp', PASP);
   drawFS();
 }
 
@@ -1530,7 +1771,7 @@ function phaseC(C) {
 function phaseB(D) {
   if (D < 0.8) return 'Перед вами прозрачное стекло: туман рисует образы сквозь цветные точки.';
   if (D < 1.0) return 'Проход сквозь туман стекла…';
-  if (D < 1.85) return 'Внутри капсулы: вода, гофрированные трубки сверху вниз, дальняя стенка из кожи светится.';
+  if (D < 1.85) return 'Внутри капсулы: вода, фиолетовые и белые гофрированные трубки, кристалл медленно опускается на дно.';
   if (D < 2.2) return 'Дальняя стенка: свет насквозь, сосуды — мембрана раскрывается.';
   return 'Гипнагогия: плоское кино приближается и заполняет взгляд.';
 }
@@ -1549,7 +1790,7 @@ function uiFrame() {
 }
 function applyMode() {
   const m = S.mode, M = MODES[m];
-  $('#mTitle').textContent = M.title; $('#mDesc').textContent = M.desc; $('#hint').textContent = M.hint;
+  $('#mTitle').textContent = M.title; $('#mDesc').textContent = M.desc; $('#hint').textContent = COARSE ? M.touch : M.hint;
   document.querySelectorAll('#modes button').forEach(b => b.classList.toggle('on', +b.dataset.m === m));
   document.body.className = document.body.className.replace(/\bm\d\b/g, '').trim() + ' m' + m;
   LABELS.forEach(l => l.style.opacity = 0);
@@ -1566,54 +1807,100 @@ function blinkThen(cb) { if (S.pending >= 0) return; S.pending = S.mode; S.blink
 document.querySelectorAll('#modes button').forEach(b => b.onclick = () => setMode(+b.dataset.m));
 $('#gauge').querySelectorAll('.node').forEach(n => n.onclick = () => { S.B.Dt = [0.05, 1.05, 1.95, 3][+n.dataset.d]; S.B.auto = false; syncChk(); });
 
-/* ---------- input ---------- */
+/* ---------- input (mouse, pen, multi-touch) ---------- */
+const ptrs = new Map();
+let pinch = null, lastTap = { t: 0, x: 0, y: 0 };
+const pdist = () => { const [a, b] = [...ptrs.values()]; return Math.hypot(a.x - b.x, a.y - b.y) || 1; };
+function syncLens() { const r = panelEl.querySelector('#rr'); if (r) r.value = Math.round(S.D.r * 100); }
 cv.addEventListener('pointerdown', e => {
-  const M = S.mouse; M.down = true; M.sx = e.clientX; M.sy = e.clientY; M.moved = false; M.last = performance.now();
-  cv.setPointerCapture(e.pointerId);
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  try { cv.setPointerCapture(e.pointerId); } catch (_) {}
+  const M = S.mouse; M.last = performance.now(); M.touch = e.pointerType !== 'mouse';
+  if (document.body.classList.contains('compact')) document.body.classList.remove('panel-open');
+  if (ptrs.size === 2) {
+    pinch = { d: pdist(), dist: S.A.dist, r: S.D.r }; M.moved = true;
+    if (S.C.holding) S.C.holding = false;
+    return;
+  }
+  if (ptrs.size > 2) return;
+  M.down = true; M.sx = M.x = e.clientX; M.sy = M.y = e.clientY; M.moved = false;
   if (S.mode === 2) { S.C.holding = true; S.C.auto = false; S.C.manual = false; syncChk(); }
   if (S.mode === 3) S.D.holding = true;
 });
 cv.addEventListener('pointermove', e => {
-  const M = S.mouse, dx = e.clientX - M.x, dy = e.clientY - M.y;
-  M.x = e.clientX; M.y = e.clientY; M.last = performance.now();
-  if (M.down && Math.hypot(e.clientX - M.sx, e.clientY - M.sy) > 4) M.moved = true;
+  if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const M = S.mouse; M.last = performance.now();
+  if (pinch && ptrs.size >= 2) {
+    const k = pdist() / pinch.d;
+    if (S.mode === 0) { S.A.dist = clamp(pinch.dist / k, 5, 40); S.A.touched = true; }
+    if (S.mode === 3) { S.D.r = clamp(pinch.r * k, 0.1, 0.6); syncLens(); }
+    return;
+  }
+  if (e.pointerType !== 'mouse' && !M.down) return;
+  const dx = e.clientX - M.x, dy = e.clientY - M.y;
+  M.x = e.clientX; M.y = e.clientY;
+  if (M.down && Math.hypot(e.clientX - M.sx, e.clientY - M.sy) > (M.touch ? 10 : 4)) M.moved = true;
   if (S.mode === 0) {
     if (M.down && M.moved) {
-      const A = S.A;
-      if (A.view !== 'orbit') { const c = A.cam; const off = V.sub(c.pos, V.add(V.add(EYE, V.mul(AX, 6.2)), [0.6, -0.1, 0])); A.dist = clamp(V.len(off), 5, 40); A.yaw = Math.atan2(off[0], off[2]); A.pitch = Math.asin(clamp(off[1] / V.len(off), -0.9, 0.9)); A.view = 'orbit'; A.focus = -1; }
-      A.yaw -= dx * 0.005; A.pitch = clamp(A.pitch + dy * 0.004, -1.2, 1.3);
+      const A = S.A; A.touched = true;
+      if (A.view !== 'orbit') { const c = A.cam; const off = V.sub(c.pos, orbitTarget()); A.dist = clamp(V.len(off), 5, 40); A.yaw = Math.atan2(off[0], off[2]); A.pitch = Math.asin(clamp(off[1] / V.len(off), -0.9, 0.9)); A.view = 'orbit'; A.focus = -1; }
+      const k = M.touch ? 1.4 : 1;
+      A.yaw -= dx * 0.005 * k; A.pitch = clamp(A.pitch + dy * 0.004 * k, -1.2, 1.3);
       document.body.classList.add('dragging');
-    } else { S.A.hover = pickPanel(e.clientX, e.clientY); document.body.classList.toggle('hovering', S.A.hover >= 0); }
+    } else if (!M.touch) { S.A.hover = pickPanel(e.clientX, e.clientY); document.body.classList.toggle('hovering', S.A.hover >= 0); }
   }
-  if (S.mode === 1 && M.down && M.moved) { S.B.Dt = clamp(S.B.Dt + dy * 0.004); S.B.Dt = clamp(S.B.Dt, 0, 3); S.B.auto = false; syncChk(); }
+  if (S.mode === 1 && M.down && M.moved) { S.B.Dt = clamp(S.B.Dt - dy * (M.touch ? 0.006 : 0.004), 0, 3); S.B.auto = false; syncChk(); }
 });
 const endPointer = e => {
+  ptrs.delete(e.pointerId);
+  if (ptrs.size < 2) pinch = null;
+  if (ptrs.size > 0) return;
   const M = S.mouse; if (!M.down) return; M.down = false;
   document.body.classList.remove('dragging');
-  if (S.mode === 0 && !M.moved) {
-    const i = pickPanel(e.clientX, e.clientY);
-    if (i >= 0) { S.A.view = 'focus'; S.A.focus = i; } else if (S.A.view === 'focus') { S.A.view = 'orbit'; S.A.focus = -1; }
+  if (S.mode === 0 && !M.moved && e.type === 'pointerup') {
+    const now = performance.now();
+    if (now - lastTap.t < 340 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 40) { S.A.view = 'eye'; S.A.focus = -1; lastTap.t = 0; }
+    else {
+      lastTap = { t: now, x: e.clientX, y: e.clientY };
+      const i = pickPanel(e.clientX, e.clientY);
+      if (i >= 0) { S.A.view = 'focus'; S.A.focus = i; } else if (S.A.view === 'focus') { S.A.view = 'orbit'; S.A.focus = -1; }
+    }
   }
   if (S.mode === 2 && S.C.holding) { S.C.holding = false; if (S.C.S > 0.62) wakeJerk(); }
   if (S.mode === 3) S.D.holding = false;
 };
 cv.addEventListener('pointerup', endPointer);
 cv.addEventListener('pointercancel', endPointer);
-cv.addEventListener('dblclick', () => { if (S.mode === 0) { S.A.view = 'eye'; S.A.focus = -1; } });
+cv.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('touchmove', e => { if (e.target === cv) e.preventDefault(); }, { passive: false });
+const FS_OK = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+function toggleFS() {
+  const d = document, el = d.documentElement;
+  try {
+    if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+    else (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+  } catch (_) {}
+}
+$('#tFull').onclick = toggleFS;
+$('#tHide').onclick = () => document.body.classList.toggle('hide-ui');
+$('#tPanel').onclick = () => document.body.classList.toggle('panel-open');
+document.body.classList.toggle('nofs', !FS_OK);
+document.body.classList.toggle('touch', COARSE);
 cv.addEventListener('wheel', e => {
   e.preventDefault(); S.mouse.last = performance.now();
   const d = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 120);
-  if (S.mode === 0) { S.A.dist = clamp(S.A.dist * Math.exp(d * 0.0012), 5, 40); }
+  if (S.mode === 0) { S.A.dist = clamp(S.A.dist * Math.exp(d * 0.0012), 5, 40); S.A.touched = true; }
   if (S.mode === 1) { S.B.Dt = clamp(S.B.Dt + d * 0.0016, 0, 3); S.B.auto = false; syncChk(); }
   if (S.mode === 2) { S.C.St = clamp(S.C.St + d * 0.0008); S.C.auto = false; S.C.manual = true; syncChk(); }
-  if (S.mode === 3) { S.D.r = clamp(S.D.r * Math.exp(-d * 0.0012), 0.1, 0.6); const r = panelEl.querySelector('#rr'); if (r) r.value = Math.round(S.D.r * 100); }
+  if (S.mode === 3) { S.D.r = clamp(S.D.r * Math.exp(-d * 0.0012), 0.1, 0.6); syncLens(); }
 }, { passive: false });
 addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' && e.target.type !== 'range' && e.target.type !== 'checkbox') return;
   const k = e.key;
   if (k >= '1' && k <= '4') { setMode(+k - 1); return; }
   if (k === 'h' || k === 'р' || k === 'H') { document.body.classList.toggle('hide-ui'); return; }
-  if (k === 'f' || k === 'а') { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); return; }
+  if (k === 'f' || k === 'а') { toggleFS(); return; }
   if (k === ' ') {
     e.preventDefault();
     if (S.mode === 2) { if (!S.C.holding) { S.C.holding = true; S.C.auto = false; S.C.manual = false; syncChk(); } }
@@ -1634,25 +1921,53 @@ addEventListener('keyup', e => { if (e.key === ' ' && S.mode === 2 && S.C.holdin
 /* =====================================================================
    MAIN LOOP
    ===================================================================== */
+function rebuildFog() {
+  const [w, h] = aspDims(COARSE ? 1024 : 1280, PASP);
+  if (fog) gl.deleteTexture(fog.tex);
+  fog = new FogLayer(Math.round(w), Math.round(h));
+  fog.prewarm(S.time);
+  L1 = ensure(L1, fog.w, fog.h, true);
+}
 function resize() {
+  const r = cv.getBoundingClientRect();
+  VW = Math.max(1, r.width || innerWidth); VH = Math.max(1, r.height || innerHeight);
   const dpr = Math.min(devicePixelRatio || 1, 1.5);
-  cv.width = Math.round(innerWidth * dpr); cv.height = Math.round(innerHeight * dpr);
+  cv.width = Math.round(VW * dpr); cv.height = Math.round(VH * dpr);
   SCN = ensure(SCN, cv.width, cv.height, true);
+  // layer aspect follows the screen, but only re-rolls on a real orientation change
+  const asp = clamp(VW / VH, 0.44, 2.1);
+  if (!fog || Math.abs(Math.log(asp / PASP)) > 0.2) { PASP = asp; rebuildFog(); }
+  const portrait = VW < VH * 0.9;
+  if (portrait !== S.A.portrait) {
+    S.A.portrait = portrait;
+    if (!S.A.touched) Object.assign(S.A, portrait ? { yaw: 0.22, pitch: 0.62, dist: 13 } : { yaw: 0.9, pitch: 0.16, dist: 14 });
+  }
+  const b = document.body.classList;
+  const compact = VW < 900 || VH < 540;
+  b.toggle('compact', compact);
+  b.toggle('short', VH < 540 && VW > VH);
+  b.toggle('mid', !compact && VW < 1100);
 }
 addEventListener('resize', resize);
+addEventListener('orientationchange', () => setTimeout(resize, 250));
+if (window.visualViewport) visualViewport.addEventListener('resize', resize);
+let glLost = false;
+cv.addEventListener('webglcontextlost', e => { e.preventDefault(); glLost = true; });
+cv.addEventListener('webglcontextrestored', () => location.reload());
 resize();
-L1 = ensure(L1, fog.w, fog.h, true);
 applyMode();
 
 const DEBUG = +(params.get('debug') || 0);
 let last = performance.now();
 function frame(now) {
   requestAnimationFrame(frame);
+  if (glLost) return;
   let dt = Math.min(0.1, (now - last) / 1000); last = now;
   S.ema = mix(S.ema, dt * 1000, 0.05);
   if (S.adaptive && (S.qTimer += dt) > 1.5) {
     S.qTimer = 0;
-    if (S.ema > 27 && S.Q > 0.4) S.Q = Math.max(0.4, S.Q - 0.08);
+    const qMin = COARSE ? 0.3 : 0.4;
+    if (S.ema > 27 && S.Q > qMin) S.Q = Math.max(qMin, S.Q - 0.08);
     else if (S.ema < 14 && S.Q < 1.0) S.Q = Math.min(1.0, S.Q + 0.04);
   }
   if (S.frozen) dt = 0;
@@ -1701,7 +2016,7 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 
-window.PERC = { S, setMode, fog, get Q() { return S.Q; } };
+window.PERC = { S, setMode, get fog() { return fog; }, get Q() { return S.Q; }, crystalState };
 }
 </script>
 </body>
