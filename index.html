@@ -13,7 +13,7 @@
 :root{
   --fg:#eceef6; --dim:rgba(236,238,246,.56); --faint:rgba(236,238,246,.32);
   --line:rgba(255,255,255,.11); --glass:rgba(12,11,18,.46);
-  --l1:#dfe9ff; --l2:#ff86a6; --l3:#b8a2ff;
+  --l1:#dfe9ff; --l2:#ff86a6; --l3:#b8a2ff; --sl:#9db8ff;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;position:fixed;inset:0;overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;
@@ -40,6 +40,8 @@ body.m1 #legend{opacity:0}
 .lg span{font-size:12.5px}
 .lg small{display:block;color:var(--faint);font-size:11px}
 .lg[data-l="0"]{--c:var(--l1)} .lg[data-l="1"]{--c:var(--l2)} .lg[data-l="2"]{--c:var(--l3)}
+.lg[data-l="3"]{--c:var(--sl);display:none;margin-top:3px;padding-top:9px;border-top:1px solid var(--line)}
+body.m2 .lg[data-l="3"]{display:flex}
 
 #modes{left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:4px;padding:5px;
   border:1px solid var(--line);border-radius:14px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
@@ -67,6 +69,8 @@ body.m1 #legend{opacity:0}
 #panel .chk input{accent-color:#c9b8ff}
 #panel .phase{font-size:12.5px;color:var(--fg);min-height:36px;line-height:1.4}
 #panel .note{font-size:11px;color:var(--faint);line-height:1.45}
+#panel .scale{position:relative;height:14px;margin-top:1px;font-size:10px;color:var(--faint)}
+#panel .scale span{position:absolute;transform:translateX(-50%);letter-spacing:.05em}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;cursor:pointer}
 input[type=range]::-webkit-slider-runnable-track{height:2px;background:linear-gradient(90deg,var(--l1),var(--l2),var(--l3));border-radius:2px;opacity:.7}
 input[type=range]::-moz-range-track{height:2px;background:linear-gradient(90deg,var(--l1),var(--l2),var(--l3));border-radius:2px;opacity:.7}
@@ -84,8 +88,9 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border:none;border-ra
 #gauge .node{position:absolute;left:0;transform:translateY(-50%);display:flex;flex-direction:row-reverse;align-items:center;gap:10px;pointer-events:auto;cursor:pointer;color:var(--dim);font-size:12px}
 #gauge .node:hover{color:#fff}
 #gauge .node i{width:13px;height:13px;border-radius:50%;border:1px solid var(--c);background:rgba(0,0,0,.5)}
-#gauge .node[data-d="0"]{--c:var(--l1);top:0} #gauge .node[data-d="1"]{--c:var(--l2);top:33.3%}
-#gauge .node[data-d="2"]{--c:var(--l2);top:66.6%} #gauge .node[data-d="3"]{--c:var(--l3);top:100%}
+#gauge .node[data-d="0"]{--c:var(--l1);top:0} #gauge .node[data-d="1"]{--c:var(--l2);top:25%}
+#gauge .node[data-d="2"]{--c:var(--l2);top:50%} #gauge .node[data-d="3"]{--c:var(--l3);top:75%}
+#gauge .node[data-d="4"]{--c:var(--sl);top:100%}
 #gauge .dot{position:absolute;left:1px;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:#fff;box-shadow:0 0 14px #fff,0 0 30px rgba(255,160,190,.8)}
 
 #err{position:fixed;inset:auto 20px 20px 20px;max-height:45vh;overflow:auto;background:rgba(40,0,10,.92);color:#ffd5dd;
@@ -196,6 +201,7 @@ body.touch #gauge .node i{width:18px;height:18px}
   <div class="lg" data-l="0"><i></i><b>I</b><span>Туман на стекле<small>парейдолия — мозг дорисовывает знакомое</small></span></div>
   <div class="lg" data-l="1"><i></i><b>II</b><span>Капсула · эпифиз<small>вся в чистой воде, свет изнутри сквозь кожу</small></span></div>
   <div class="lg" data-l="2"><i></i><b>III</b><span>Гипнагогия<small>плоское кино на грани сна</small></span></div>
+  <div class="lg" data-l="3"><i></i><b>☾</b><span>Сон<small>после гипнагогии — плоское раскрывается вглубь</small></span></div>
 </div>
 
 <aside id="panel" class="ui"></aside>
@@ -210,6 +216,7 @@ body.touch #gauge .node i{width:18px;height:18px}
   <div class="node" data-d="1"><span>II · капсула</span><i></i></div>
   <div class="node" data-d="2"><span>дальняя стенка</span><i></i></div>
   <div class="node" data-d="3"><span>III · гипнагогия</span><i></i></div>
+  <div class="node" data-d="4"><span>сон</span><i></i></div>
   <div class="dot"></div>
 </div>
 <nav id="modes" class="ui">
@@ -233,6 +240,7 @@ body.touch #gauge .node i{width:18px;height:18px}
               тонет и ложится на дно; вы — источник света у острого конца.
    Слой III — гипнагогия: плоское «кино» засыпания/пробуждения.
    Режимы: А — стопка стёкол, Б — погружение, В — засыпание, Г — линза.
+   После слоя III — сон: плоское кино гипнагогии раскрывается вглубь.
    Всё — внутреннее видение: глаза закрыты, темнота, как под маской для сна.
    ===================================================================== */
 
@@ -748,6 +756,7 @@ void main(){
 /* ---------- Layer III : hypnagogic reel ---------- */
 const FS_DREAM = FRAG(`
 uniform vec2 u_res; uniform float u_time; uniform int u_sa; uniform int u_sb; uniform float u_mix;
+uniform float u_sleep; uniform vec2 u_look;
 vec3 sTunnel(vec2 p, float t){
   float r = length(p) + 1e-3; float a = atan(p.y, p.x);
   float z = 0.32/r + t*0.9;
@@ -927,6 +936,15 @@ void main(){
   vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
   p *= clamp(0.9*u_res.y/u_res.x, 1.0, 1.5);
   float t = u_time;
+  float z = u_sleep;
+  // сон comes after layer III: the flat film opens into depth — the view drifts into the
+  // scene, widens and bends around the viewer, and attention can look around inside it
+  if (z > 0.0){
+    p += u_look*vec2(0.3, 0.22)*z;
+    p = rot(0.07*z*sin(t*0.11))*p;
+    p *= mix(1.0, 0.68 + 0.04*sin(t*0.17), z);
+    p *= 1.0 + z*min(dot(p, p), 0.5);
+  }
   vec2 w = vec2(fbm3(p*1.8 + t*0.07), fbm3(p*1.8 + vec2(5.2, 1.3) - t*0.06)) - 0.5;
   float m = u_mix; float melt = sin(PI*m);
   vec3 A = scene(u_sa, (p + w*(0.03 + 0.35*melt))*(1.0 + 0.15*m), t);
@@ -937,11 +955,14 @@ void main(){
     col = mix(A, B, smoothstep(n - 0.2, n + 0.2, m*1.4 - 0.2));
   }
   col = max(col, 0.0);
-  col += (hash21(gl_FragCoord.xy + fract(t*13.0)*100.0) - 0.5)*0.07;
-  col *= 0.95 + 0.05*sin(gl_FragCoord.y*2.2);
-  col *= 0.97 + 0.03*sin(t*37.0);
+  // grain, scan lines, flicker and vignette make layer III read as a flat film; they fade in сон
+  float fl = 1.0 - z;
+  col += (hash21(gl_FragCoord.xy + fract(t*13.0)*100.0) - 0.5)*0.07*fl;
+  col *= 1.0 - 0.05*fl*(1.0 - sin(gl_FragCoord.y*2.2));
+  col *= 1.0 - 0.03*fl*(1.0 - sin(t*37.0));
   vec2 v = gl_FragCoord.xy/u_res - 0.5;
-  col *= 1.0 - dot(v, v)*0.9;
+  col *= 1.0 - dot(v, v)*0.9*fl;
+  col += vec3(0.035, 0.025, 0.05)*exp(-dot(v, v)*7.0)*z;
   o = vec4(col, 1.0);
 }`);
 
@@ -1008,7 +1029,7 @@ const FS_DIVE = FRAG(`
 uniform sampler2D u_l1; uniform sampler2D u_l2; uniform sampler2D u_l3;
 uniform vec2 u_res; uniform float u_time; uniform mat3 u_cam; uniform float u_tanHalf; uniform vec2 u_head;
 uniform float u_glassDist; uniform float u_glassH; uniform float u_podVis; uniform float u_passFog; uniform float u_flash;
-uniform float u_dreamDist; uniform float u_dreamVis; uniform float u_voidVis; uniform float u_speed; uniform float u_fasp;
+uniform float u_dreamDist; uniform float u_dreamVis; uniform float u_voidVis; uniform float u_speed; uniform float u_fasp; uniform float u_sleep;
 void main(){
   vec2 suv = v_uv;
   vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
@@ -1033,7 +1054,8 @@ void main(){
     float ed = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
     float inside = smoothstep(0.006, -0.006, ed);
     vec2 cuv = clamp(uv, 0.0, 1.0);
-    vec2 d = (cuv - 0.5)*0.006;
+    if (u_sleep > 0.0){ vec2 c = uv - 0.5; cuv = clamp(0.5 + c*(1.0 + u_sleep*min(dot(c, c), 0.3)), 0.0, 1.0); }
+    vec2 d = (cuv - 0.5)*0.006*(1.0 - u_sleep);
     vec3 dr = vec3(texture(u_l3, cuv + d).r, texture(u_l3, cuv).g, texture(u_l3, cuv - d).b);
     vec3 spill = textureLod(u_l3, cuv, 5.0).rgb*exp(-max(ed, 0.0)*5.0)*0.45;
     col += spill*u_dreamVis;
@@ -1066,7 +1088,7 @@ void main(){
 const FS_SLEEP = FRAG(`
 uniform sampler2D u_l1; uniform sampler2D u_l2; uniform sampler2D u_l3;
 uniform vec2 u_res; uniform float u_time; uniform float u_S;
-uniform float u_echo; uniform float u_jerk; uniform float u_fasp;
+uniform float u_fasp;
 // Klüver form constants: faint tunnels, spirals and lattices that come before images
 vec3 formConstants(vec2 p, float t){
   float r = length(p) + 1e-3, a = atan(p.y, p.x), lr = log(r);
@@ -1079,27 +1101,14 @@ vec3 formConstants(vec2 p, float t){
 }
 void main(){
   float t = u_time;
-  vec2 sh = u_jerk*0.016*vec2(sin(t*83.0), cos(t*71.0));
-  vec2 suv = v_uv + sh;
-  vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y + sh*vec2(u_res.x/u_res.y, 1.0);
+  vec2 suv = v_uv;
+  vec2 p = (gl_FragCoord.xy - 0.5*u_res)/u_res.y;
   float S = u_S;
   vec3 col = innerDark(p, t);
   // I · coloured specks in the dark; the mind joins them with fog into familiar figures
   float l1 = 1.0 - smoothstep(0.32, 0.48, S);
   vec4 fog = texture(u_l1, coverUV(suv, u_res, u_fasp));
   col = col*(1.0 - fog.a*0.6*l1) + fog.rgb*l1;
-  if (u_echo > 0.01){
-    // after a hypnic jerk the contours of the dream settle as fog
-    vec2 px = 7.0/u_res;
-    vec2 wuv = suv + (vec2(fbm3(p*4.0 + t*0.05), fbm3(p*4.0 + 9.0)) - 0.5)*0.03;
-    vec3 a = textureLod(u_l3, wuv, 2.5).rgb;
-    vec3 b = textureLod(u_l3, wuv + vec2(px.x, 0.0), 2.5).rgb;
-    vec3 c = textureLod(u_l3, wuv + vec2(0.0, px.y), 2.5).rgb;
-    float e = length(a - b) + length(a - c);
-    float lum = dot(a, vec3(0.3, 0.5, 0.2));
-    float fe = clamp(e*3.0 + smoothstep(0.35, 0.8, lum)*0.35, 0.0, 1.0)*u_echo*(0.55 + 0.45*fbm(p*5.0 + t*0.1));
-    col = mix(col, vec3(0.9, 0.93, 1.0), fe*0.7);
-  }
   // II · an inner light kindles deep in the dark, opens into the capsule, then recedes
   float podIn = smoothstep(0.3, 0.56, S), podOut = smoothstep(0.62, 0.76, S), podM = 0.0;
   if (podIn > 0.0 && podOut < 1.0){
@@ -1111,16 +1120,17 @@ void main(){
     col = mix(col, pod, podM);
   }
   col += formConstants(p, t)*smoothstep(0.68, 0.78, S)*(1.0 - smoothstep(0.86, 0.96, S))*(1.0 - podM)*0.4;
-  // III · hypnagogic pictures bloom out of the dark in patches
+  // III · hypnagogic pictures bloom out of the dark in patches — still flat, like a film.
+  // Сон comes only after it: the picture closes over the whole view and opens into depth.
   float dreamPh = smoothstep(0.74, 0.97, S);
+  float z = smoothstep(1.0, 1.3, S);
   if (dreamPh > 0.0){
     float bn = fbm(p*1.7 + vec2(t*0.03, 0.0));
-    float bloom = smoothstep(0.1, -0.1, bn - (dreamPh*1.3 - 0.15));
-    vec2 d = (suv - 0.5)*0.006;
+    float bloom = mix(smoothstep(0.1, -0.1, bn - (dreamPh*1.3 - 0.15)), 1.0, z);
+    vec2 d = (suv - 0.5)*0.006*(1.0 - z);
     vec3 dr = vec3(texture(u_l3, suv + d).r, texture(u_l3, suv).g, texture(u_l3, suv - d).b);
     col = mix(col, dr*(0.55 + 0.45*dreamPh), bloom*dreamPh);
   }
-  col += vec3(0.5, 0.22, 0.3)*u_jerk*0.3*exp(-length(p)*2.0);
   o = vec4(col, 1.0);
 }`);
 
@@ -1392,31 +1402,32 @@ const MODES = [
   { title: 'А · Стопка стёкол', desc: 'Три прозрачных экрана нанизаны на луч взгляда: ближний меньше и ниже, дальний больше и выше. Это модель снаружи. Сведите слои — и они сольются в одно восприятие.',
     hint: 'тяните — облёт · колесо — ближе/дальше · клик по слою — фокус · двойной клик — глазами наблюдателя · Esc — обзор',
     touch: 'проведите — облёт · щипок — ближе/дальше · тап по слою — фокус · двойной тап — глазами наблюдателя' },
-  { title: 'Б · Погружение', desc: 'Глаза закрыты, взгляд внутрь, от первого лица: вы — источник света. Сквозь стекло с туманными образами — внутрь капсулы из кожи, целиком заполненной прозрачной водой, между трубками — сквозь дальнюю стенку в плоское гипнагогическое кино.',
+  { title: 'Б · Погружение', desc: 'Глаза закрыты, взгляд внутрь, от первого лица: вы — источник света. Сквозь стекло с туманными образами — внутрь капсулы из кожи, целиком заполненной прозрачной водой, между трубками — сквозь дальнюю стенку в плоское гипнагогическое кино, а за ним — в сон.',
     hint: 'колесо / ↑↓ / тяните вверх-вниз — глубина · мышь — взгляд и наклон головы · пробел — авто',
     touch: 'проведите вверх — глубже, вниз — назад · ведите пальцем в стороны — взгляд' },
-  { title: 'В · Засыпание', desc: 'Глаза закрыты, маска для сна, темнота — только внутреннее видение. Слои сменяют друг друга по мере засыпания: цветные искорки складываются в туманные образы → в глубине разгорается свет капсулы → тоннели и спирали → гипнагогические картинки. Вздрагивание выбрасывает обратно к первому слою.',
-    hint: 'удерживайте пробел или кнопку мыши — глубже в сон · отпустите — всплыть · курсор — куда направлено внимание',
-    touch: 'удерживайте палец — глубже в сон · отпустите — всплыть' },
-  { title: 'Г · Линза внимания', desc: 'Все слои в одной плоскости. Внимание прорезает их как линза: снаружи — туман на стекле, в кольце — капсула, в центре — сновидение. Движение взгляда даёт параллакс глубины.',
+  { title: 'В · Засыпание', desc: 'Глаза закрыты, маска для сна, темнота — только внутреннее видение. Слои сменяют друг друга по мере засыпания: цветные искорки складываются в туманные образы → в глубине разгорается свет капсулы → тоннели и спирали → гипнагогические картинки → и только после них сон: плоское кино раскрывается вглубь. Пробуждение идёт обратно через слои.',
+    hint: 'удерживайте пробел или кнопку мыши — глубже: I → II → III → сон · отпустите — пробуждение · курсор — куда направлено внимание',
+    touch: 'удерживайте палец — глубже: I → II → III → сон · отпустите — пробуждение' },
+  { title: 'Г · Линза внимания', desc: 'Все слои в одной плоскости. Внимание прорезает их как линза: снаружи — туман на стекле, в кольце — капсула, в центре — гипнагогия. Движение взгляда даёт параллакс глубины.',
     hint: 'мышь — направить внимание · колесо — размер линзы · удерживайте кнопку — глубже · пробел — блуждание',
     touch: 'ведите пальцем — направить внимание · щипок — размер линзы · удержание — глубже' },
 ];
+const D_MAX = 3.6, S_MAX = 1.4;  // сон lies beyond layer III in both sequences
 const S = {
   mode: clamp((+params.get('mode') || 1) - 1, 0, 3) | 0,
   pending: -1, queued: -1, fadeT: 0, dark: 0, fadeCb: null,
   time: +(params.get('t') || 0), frozen: params.has('freeze'),
   Q: params.has('q') ? clamp(+params.get('q'), 0.25, 1.5) : Math.max(0.3, (COARSE ? 0.6 : 0.9) * Math.pow(0.7, BOOT.lostN)), adaptive: !params.has('q'), ema: 16, qTimer: 0,
   mouse: { x: VW / 2, y: VH / 2, down: false, sx: 0, sy: 0, moved: false, last: -1e9, touch: false },
-  legend: [1, 0, 0],
+  legend: [1, 0, 0, 0],
   A: { explode: 1, explodeV: 1, yaw: 0.9, pitch: 0.16, dist: 14, touched: false, portrait: false, view: 'orbit', focus: -1, auto: true, hover: -1,
        hoverV: [0, 0, 0], alphaV: [1, 1, 1], cam: null, panels: [], vp: null },
   B: { D: 0, Dt: 0, auto: true, hold: 0, speed: 0, look: [0, 0] },
-  C: { S: 0.03, St: 0.03, auto: true, tau: 0, holding: false, manual: false, echo: 0, jerk: 0 },
+  C: { S: 0.03, St: 0.03, auto: true, tau: 0, holding: false, manual: false, dS: 0, waking: false, look: [0, 0] },
   D: { c: [0.15, 0.02], r: 0.3, inner: 0.5, innerBase: 0.5, auto: true, holding: false },
 };
-if (params.has('D')) { S.B.Dt = S.B.D = clamp(+params.get('D'), 0, 3); S.B.auto = false; }
-if (params.has('S')) { S.C.St = S.C.S = clamp(+params.get('S')); S.C.auto = false; S.C.manual = true; }
+if (params.has('D')) { S.B.Dt = S.B.D = clamp(+params.get('D'), 0, D_MAX); S.B.auto = false; }
+if (params.has('S')) { S.C.St = S.C.S = clamp(+params.get('S'), 0, S_MAX); S.C.auto = false; S.C.manual = true; }
 if (params.has('ex')) { S.A.explode = S.A.explodeV = clamp(+params.get('ex')); }
 if (params.has('view')) { S.A.view = params.get('view'); S.A.focus = +(params.get('focus') || -1); }
 
@@ -1515,7 +1526,7 @@ function updateA(dt, t) {
     A.alphaV[i] += (ta - A.alphaV[i]) * damp(dt, 4);
   }
   const f = A.view === 'focus' ? A.focus : A.hover;
-  S.legend = [0, 1, 2].map(i => f < 0 ? 0.85 : (i === f ? 1 : 0.15));
+  S.legend = [0, 1, 2].map(i => f < 0 ? 0.85 : (i === f ? 1 : 0.15)).concat(0);
 }
 function bParams(D) {
   const glassDist = 2.7 * (1 - ease(D / 0.9)) - 0.05;
@@ -1531,12 +1542,13 @@ function bParams(D) {
     voidVis: smooth(2.1, 2.3, D),
     dreamVis: smooth(2.12, 2.36, D),
     dreamDist: mix(8.5, 0.5, ease((D - 2.12) / 0.88)),
+    sleep: smooth(3.0, 3.5, D),
   };
 }
 function updateB(dt, t) {
   const B = S.B;
   if (B.auto) {
-    if (B.Dt < 3) { B.Dt = Math.min(3, B.Dt + dt * 0.055); B.hold = 0; }
+    if (B.Dt < D_MAX) { B.Dt = Math.min(D_MAX, B.Dt + dt * 0.055); B.hold = 0; }
     else if ((B.hold += dt) > 7 && S.pending < 0) { B.hold = -99; fadeThen(() => { B.Dt = B.D = 0; B.hold = 0; }); }
   }
   const prev = B.D; B.D += (B.Dt - B.D) * damp(dt, 2.2);
@@ -1545,11 +1557,13 @@ function updateB(dt, t) {
   const mx = M.touch ? (M.down ? M.x / VW - .5 : 0) : M.x / VW - .5, my = M.touch ? 0 : M.y / VH - .5;
   B.look[0] += (mx - B.look[0]) * damp(dt, 2.5); B.look[1] += (my - B.look[1]) * damp(dt, 2.5);
   const D = B.D;
-  S.legend = [1 - smooth(0.75, 1.0, D), smooth(0.8, 1.05, D) * (1 - smooth(2.05, 2.3, D)), smooth(2.1, 2.4, D)];
+  S.legend = [1 - smooth(0.75, 1.0, D), smooth(0.8, 1.05, D) * (1 - smooth(2.05, 2.3, D)), smooth(2.1, 2.4, D) * (1 - smooth(3.0, 3.4, D)), smooth(3.0, 3.4, D)];
 }
-// auto cycle: specks and fog figures → capsule (held while the crystal sinks) → form constants → dream → jerk
-const C_KEYS = [[0, 0.03], [4, 0.05], [13, 0.3], [19, 0.56], [27, 0.64], [33, 0.86], [37, 1], [44, 1]];
-const C_CYCLE = 50, C_JERK = 44;
+// auto cycle: specks and fog figures → capsule (held while the crystal sinks) → form constants →
+// hypnagogia → сон; then waking goes back up through III → II → I
+const C_KEYS = [[0, 0.03], [4, 0.05], [13, 0.3], [19, 0.56], [27, 0.64], [33, 0.86], [37, 1], [41, 1],
+  [49, S_MAX], [58, S_MAX], [64, 0.92], [68, 0.5], [72, 0.05], [74, 0.03]];
+const C_CYCLE = 74;
 function autoS(tau) {
   for (let i = 1; i < C_KEYS.length; i++) {
     const [t0, s0] = C_KEYS[i - 1], [t1, s1] = C_KEYS[i];
@@ -1557,21 +1571,23 @@ function autoS(tau) {
   }
   return 0.03;
 }
-function wakeJerk() { const C = S.C; C.S = C.St = 0.03; C.jerk = 1; C.echo = 1; }
 function updateC(dt, t) {
   const C = S.C;
-  if (C.auto) {
-    const prevTau = C.tau; C.tau = (C.tau + dt) % C_CYCLE;
-    if (prevTau < C_JERK && C.tau >= C_JERK) wakeJerk(); else C.St = autoS(C.tau) + 0.012 * Math.sin(t * 1.1);
-  } else if (C.holding) C.St = Math.min(1, C.St + dt * 0.075);
+  if (C.auto) { C.tau = (C.tau + dt) % C_CYCLE; C.St = autoS(C.tau) + 0.012 * Math.sin(t * 1.1); }
+  else if (C.holding) C.St = Math.min(S_MAX, C.St + dt * 0.075);
   else if (!C.manual) C.St = Math.max(0.02, C.St - dt * 0.22);
+  const prevS = C.S;
   C.S += (C.St - C.S) * damp(dt, 1.8);
-  C.echo *= Math.exp(-dt * 0.28); C.jerk *= Math.exp(-dt * 5);
+  if (dt > 0) C.dS = mix(C.dS, (C.S - prevS) / dt, damp(dt, 4));
+  C.waking = C.dS < -0.03;
   fog.target = C.S < 0.34 ? Math.round(2 + smooth(0.02, 0.3, C.S) * 3) : 0;
   fog.enabled = C.S < 0.3; fog.rate = 1 + C.S * 3; fog.gazeBias = 0.75;
   const u = coverJS(S.mouse.x / VW, 1 - S.mouse.y / VH, PASP);
   fog.gaze = [u[0] * fog.w, (1 - u[1]) * fog.h];
-  S.legend = [1 - smooth(0.3, 0.46, C.S), smooth(0.3, 0.5, C.S) * (1 - smooth(0.62, 0.76, C.S)), smooth(0.74, 0.95, C.S)];
+  const M = S.mouse, lx = M.touch ? 0 : M.x / VW - .5, ly = M.touch ? 0 : M.y / VH - .5;
+  C.look[0] += (lx - C.look[0]) * damp(dt, 2); C.look[1] += (ly - C.look[1]) * damp(dt, 2);
+  const zz = smooth(1.0, 1.25, C.S);
+  S.legend = [1 - smooth(0.3, 0.46, C.S), smooth(0.3, 0.5, C.S) * (1 - smooth(0.62, 0.76, C.S)), smooth(0.74, 0.95, C.S) * (1 - zz), zz];
 }
 function updateD(dt, t) {
   const D = S.D, asp = VW / VH;
@@ -1582,7 +1598,7 @@ function updateD(dt, t) {
   const k = damp(dt, idle ? 1.2 : 7);
   D.c[0] += (tg[0] - D.c[0]) * k; D.c[1] += (tg[1] - D.c[1]) * k;
   D.inner += ((D.holding ? 0.9 : D.innerBase) - D.inner) * damp(dt, 2.5);
-  S.legend = [0.8, 0.8, 0.8];
+  S.legend = [0.8, 0.8, 0.8, 0];
 }
 function coverJS(sx, sy, ta) {
   const sa = VW / VH; let x = sx - .5, y = sy - .5;
@@ -1692,10 +1708,11 @@ function renderPod(t, cam) {
     .v4a('u_sd', SPK_D).v4a('u_su', SPK_U);
   drawFS(); mipmap(L2);
 }
-function renderDream(t) {
+function renderDream(t, z, look) {
   const d = dreamParams(t);
   bind(L3);
-  P.dream.use().f('u_res', L3.w, L3.h).f('u_time', t).i('u_sa', d.a).i('u_sb', d.b).f('u_mix', d.m);
+  P.dream.use().f('u_res', L3.w, L3.h).f('u_time', t).i('u_sa', d.a).i('u_sb', d.b).f('u_mix', d.m)
+    .f('u_sleep', z || 0).f('u_look', look ? look[0] : 0, look ? look[1] : 0);
   drawFS(); mipmap(L3);
 }
 function podCam(t) {
@@ -1785,15 +1802,14 @@ function renderB(t, cam) {
   P.dive.use().tex('u_l1', 0, L1.tex).tex('u_l2', 1, L2.tex).tex('u_l3', 2, L3.tex)
     .f('u_res', SCN.w, SCN.h).f('u_time', t).m3('u_cam', cam.b.m).f('u_tanHalf', cam.th).f('u_head', cam.head[0], cam.head[1])
     .f('u_glassDist', bp.glassDist).f('u_glassH', 2.9 * cam.th / 0.56).f('u_fasp', PASP).f('u_podVis', bp.podVis).f('u_passFog', bp.passFog).f('u_flash', bp.flash)
-    .f('u_dreamDist', bp.dreamDist).f('u_dreamVis', bp.dreamVis).f('u_voidVis', bp.voidVis).f('u_speed', S.B.speed);
+    .f('u_dreamDist', bp.dreamDist).f('u_dreamVis', bp.dreamVis).f('u_voidVis', bp.voidVis).f('u_speed', S.B.speed).f('u_sleep', bp.sleep);
   drawFS();
 }
 function renderC(t) {
   const C = S.C;
   bind(SCN);
   P.sleep.use().tex('u_l1', 0, L1.tex).tex('u_l2', 1, L2.tex).tex('u_l3', 2, L3.tex)
-    .f('u_res', SCN.w, SCN.h).f('u_time', t).f('u_S', C.S)
-    .f('u_echo', C.echo).f('u_jerk', C.jerk).f('u_fasp', PASP);
+    .f('u_res', SCN.w, SCN.h).f('u_time', t).f('u_S', C.S).f('u_fasp', PASP);
   drawFS();
 }
 function renderD(t) {
@@ -1819,25 +1835,26 @@ function buildPanel() {
     <div class="row"><label class="chk"><input id="au" type="checkbox" ${S.A.auto ? 'checked' : ''}> медленный облёт</label></div>
     <div class="note">Сведите слои в ноль и нажмите «Глазами наблюдателя»: три экрана совпадут в одну картину.</div>`;
   if (m === 1) h += `
-    <div class="row"><label class="t">Глубина <output id="dO"></output></label><input id="dd" type="range" min="0" max="300" value="${Math.round(S.B.Dt * 100)}"></div>
-    <div class="row btns"><button data-d="0.05">I · стекло</button><button data-d="1.35">II · капсула</button><button data-d="3">III · сон</button></div>
+    <div class="row"><label class="t">Глубина <output id="dO"></output></label><input id="dd" type="range" min="0" max="${D_MAX * 100}" value="${Math.round(S.B.Dt * 100)}"></div>
+    <div class="row btns"><button data-d="0.05">I · стекло</button><button data-d="1.35">II · капсула</button><button data-d="3">III · гипнагогия</button><button data-d="${D_MAX}">сон</button></div>
     <div class="row"><label class="chk"><input id="au" type="checkbox" ${S.B.auto ? 'checked' : ''}> авто-погружение</label></div>
     <div class="phase" id="ph"></div>`;
   if (m === 2) h += `
-    <div class="row"><label class="t">Глубина засыпания <output id="sO"></output></label><input id="ss" type="range" min="0" max="100" value="${Math.round(S.C.S * 100)}"></div>
+    <div class="row"><label class="t">Глубина засыпания <output id="sO"></output></label><input id="ss" type="range" min="0" max="100" value="${Math.round(S.C.St / S_MAX * 100)}">
+      <div class="scale"><span style="left:11%">I</span><span style="left:36%">II</span><span style="left:64%">III</span><span style="left:86%">сон</span></div></div>
     <div class="row"><label class="chk"><input id="au" type="checkbox" ${S.C.auto ? 'checked' : ''}> автоцикл засыпания</label></div>
     <div class="phase" id="ph"></div>
-    <div class="note">Держите пробел или кнопку мыши — погружение глубже в сон. Отпустите в глубокой фазе — вздрагивание и возврат к первому слою.</div>`;
+    <div class="note">Держите пробел или кнопку мыши — глубже: I → II → III → сон. Отпустите — медленное пробуждение обратно через слои.</div>`;
   if (m === 3) h += `
     <div class="row"><label class="t">Размер линзы <output id="rO"></output></label><input id="rr" type="range" min="10" max="60" value="${Math.round(S.D.r * 100)}"></div>
-    <div class="row"><label class="t">Доля сновидения внутри <output id="iO"></output></label><input id="ii" type="range" min="0" max="95" value="${Math.round(S.D.innerBase * 100)}"></div>
+    <div class="row"><label class="t">Доля гипнагогии внутри <output id="iO"></output></label><input id="ii" type="range" min="0" max="95" value="${Math.round(S.D.innerBase * 100)}"></div>
     <div class="row"><label class="chk"><input id="au" type="checkbox" ${S.D.auto ? 'checked' : ''}> блуждание внимания (без мыши)</label></div>`;
   panelEl.innerHTML = h;
   const on = (sel, ev, fn) => { const e = panelEl.querySelector(sel); if (e) e.addEventListener(ev, fn); };
   on('#au', 'change', e => { [S.A, S.B, S.C, S.D][S.mode].auto = e.target.checked; if (S.mode === 2 && e.target.checked) { S.C.manual = false; S.C.tau = 0; } });
   on('#ex', 'input', e => { S.A.explode = e.target.value / 100; });
   on('#dd', 'input', e => { S.B.Dt = e.target.value / 100; S.B.auto = false; syncChk(); });
-  on('#ss', 'input', e => { S.C.St = e.target.value / 100; S.C.auto = false; S.C.manual = true; syncChk(); });
+  on('#ss', 'input', e => { S.C.St = e.target.value / 100 * S_MAX; S.C.auto = false; S.C.manual = true; syncChk(); });
   on('#rr', 'input', e => { S.D.r = e.target.value / 100; });
   on('#ii', 'input', e => { S.D.innerBase = e.target.value / 100; });
   panelEl.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { S.A.view = b.dataset.v; S.A.focus = -1; });
@@ -1845,19 +1862,22 @@ function buildPanel() {
   panelEl.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { S.B.Dt = +b.dataset.d; S.B.auto = false; syncChk(); });
 }
 function syncChk() { const c = panelEl.querySelector('#au'); if (c) c.checked = [S.A, S.B, S.C, S.D][S.mode].auto; }
+const stageC = v => v < 0.32 ? 'I · туман' : v < 0.7 ? 'II · капсула' : v < 0.78 ? 'II → III' : v < 1.02 ? 'III · гипнагогия' : 'сон';
 function phaseC(C) {
-  if (C.jerk > 0.08 || C.echo > 0.5) return 'Вздрагивание — сон рассыпается, его контуры оседают туманом.';
+  if (C.S > 1.04) return 'Сон — начинается только после гипнагогии: плоское кино раскрывается вглубь, вы уже не смотрите на картинку, а находитесь внутри неё.';
+  if (C.waking && C.S > 0.3) return 'Пробуждение — из сна обратно через слои: гипнагогия → капсула → туман на стекле.';
   if (C.S < 0.34) return 'Глаза закрыты, темнота под маской. Мозг соединяет цветные искорки в знакомое — туман рисует созвездия, лица, цифры.';
   if (C.S < 0.66) return 'В глубине темноты разгорается внутренний свет — капсула в чистой воде, трубки, опускающийся кристалл.';
   if (C.S < 0.78) return 'Свет уходит вглубь; в темноте проступают тоннели, спирали, решётки.';
-  return 'Гипнагогия — плоские картинки возникают сами собой.';
+  return 'Гипнагогия — плоские картинки возникают сами собой. За ней начинается сон.';
 }
 function phaseB(D) {
   if (D < 0.8) return 'Перед вами прозрачное стекло: туман рисует образы сквозь цветные точки.';
   if (D < 1.0) return 'Проход сквозь туман стекла…';
   if (D < 1.85) return 'Внутри капсулы, целиком заполненной чистейшей водой: фиолетовые и белые трубки, кристалл плавно опускается на дно.';
   if (D < 2.2) return 'Дальняя стенка: свет насквозь, сосуды — мембрана раскрывается.';
-  return 'Гипнагогия: плоское кино приближается и заполняет взгляд.';
+  if (D < 3.02) return 'Гипнагогия: плоское кино приближается и заполняет взгляд. За ним — сон.';
+  return 'Сон — за гипнагогией: плоское кино раскрылось вглубь и стало миром вокруг.';
 }
 function uiFrame() {
   const m = S.mode;
@@ -1865,12 +1885,12 @@ function uiFrame() {
   const out = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
   if (m === 0) { out('exO', Math.round(S.A.explode * 100) + '%'); panelEl.querySelectorAll('[data-v]').forEach(b => b.classList.toggle('on', S.A.view === b.dataset.v)); panelEl.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', S.A.view === 'focus' && S.A.focus === +b.dataset.f)); }
   if (m === 1) { set('dd', Math.round(S.B.Dt * 100)); out('dO', S.B.D.toFixed(2)); out('ph', phaseB(S.B.D)); }
-  if (m === 2) { set('ss', Math.round(S.C.St * 100)); out('sO', Math.round(S.C.S * 100) + '%'); out('ph', phaseC(S.C)); }
+  if (m === 2) { set('ss', Math.round(S.C.St / S_MAX * 100)); out('sO', stageC(S.C.S)); out('ph', phaseC(S.C)); }
   if (m === 3) { out('rO', Math.round(S.D.r * 100)); out('iO', Math.round(S.D.inner * 100) + '%'); }
-  document.querySelectorAll('.lg').forEach((e, i) => e.style.setProperty('--a', S.legend[i].toFixed(3)));
+  document.querySelectorAll('.lg').forEach((e, i) => e.style.setProperty('--a', (S.legend[i] || 0).toFixed(3)));
   const g = $('#gauge');
   g.style.display = m === 1 ? 'block' : 'none';
-  if (m === 1) g.querySelector('.dot').style.top = (S.B.D / 3 * 100) + '%';
+  if (m === 1) g.querySelector('.dot').style.top = gaugePos(S.B.D) + '%';
 }
 function applyMode() {
   const m = S.mode, M = MODES[m];
@@ -1890,7 +1910,12 @@ function setMode(m) {
 }
 function fadeThen(cb) { if (S.pending >= 0) return; S.pending = S.mode; S.fadeT = 0; S.fadeCb = cb; }
 document.querySelectorAll('#modes button').forEach(b => b.onclick = () => setMode(+b.dataset.m));
-$('#gauge').querySelectorAll('.node').forEach(n => n.onclick = () => { S.B.Dt = [0.05, 1.05, 1.95, 3][+n.dataset.d]; S.B.auto = false; syncChk(); });
+const GAUGE_D = [0, 1.05, 1.95, 3, D_MAX];
+function gaugePos(D) {
+  for (let i = 1; i < GAUGE_D.length; i++) if (D <= GAUGE_D[i]) return (i - 1 + clamp((D - GAUGE_D[i - 1]) / (GAUGE_D[i] - GAUGE_D[i - 1]))) * 25;
+  return 100;
+}
+$('#gauge').querySelectorAll('.node').forEach(n => n.onclick = () => { S.B.Dt = [0.05, 1.05, 1.95, 3, D_MAX][+n.dataset.d]; S.B.auto = false; syncChk(); });
 
 /* ---------- input (mouse, pen, multi-touch) ---------- */
 const ptrs = new Map();
@@ -1934,7 +1959,7 @@ cv.addEventListener('pointermove', e => {
       document.body.classList.add('dragging');
     } else if (!M.touch) { S.A.hover = pickPanel(e.clientX, e.clientY); document.body.classList.toggle('hovering', S.A.hover >= 0); }
   }
-  if (S.mode === 1 && M.down && M.moved) { S.B.Dt = clamp(S.B.Dt - dy * (M.touch ? 0.006 : 0.004), 0, 3); S.B.auto = false; syncChk(); }
+  if (S.mode === 1 && M.down && M.moved) { S.B.Dt = clamp(S.B.Dt - dy * (M.touch ? 0.006 : 0.004), 0, D_MAX); S.B.auto = false; syncChk(); }
 });
 const endPointer = e => {
   ptrs.delete(e.pointerId);
@@ -1951,7 +1976,7 @@ const endPointer = e => {
       if (i >= 0) { S.A.view = 'focus'; S.A.focus = i; } else if (S.A.view === 'focus') { S.A.view = 'orbit'; S.A.focus = -1; }
     }
   }
-  if (S.mode === 2 && S.C.holding) { S.C.holding = false; if (S.C.S > 0.62) wakeJerk(); }
+  if (S.mode === 2) S.C.holding = false;
   if (S.mode === 3) S.D.holding = false;
 };
 cv.addEventListener('pointerup', endPointer);
@@ -1976,8 +2001,8 @@ cv.addEventListener('wheel', e => {
   e.preventDefault(); S.mouse.last = performance.now();
   const d = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 120);
   if (S.mode === 0) { S.A.dist = clamp(S.A.dist * Math.exp(d * 0.0012), 5, 40); S.A.touched = true; }
-  if (S.mode === 1) { S.B.Dt = clamp(S.B.Dt + d * 0.0016, 0, 3); S.B.auto = false; syncChk(); }
-  if (S.mode === 2) { S.C.St = clamp(S.C.St + d * 0.0008); S.C.auto = false; S.C.manual = true; syncChk(); }
+  if (S.mode === 1) { S.B.Dt = clamp(S.B.Dt + d * 0.0016, 0, D_MAX); S.B.auto = false; syncChk(); }
+  if (S.mode === 2) { S.C.St = clamp(S.C.St + d * 0.0011, 0, S_MAX); S.C.auto = false; S.C.manual = true; syncChk(); }
   if (S.mode === 3) { S.D.r = clamp(S.D.r * Math.exp(-d * 0.0012), 0.1, 0.6); syncLens(); }
 }, { passive: false });
 addEventListener('keydown', e => {
@@ -1996,12 +2021,12 @@ addEventListener('keydown', e => {
   if (k === 'ArrowUp' || k === 'ArrowDown') {
     e.preventDefault(); const s = k === 'ArrowUp' ? 1 : -1;
     if (S.mode === 0) { S.A.view = 'focus'; S.A.focus = clamp((S.A.focus < 0 ? (s > 0 ? -1 : 3) : S.A.focus) + s, 0, 2); }
-    if (S.mode === 1) { S.B.Dt = clamp(S.B.Dt + s * 0.25, 0, 3); S.B.auto = false; syncChk(); }
-    if (S.mode === 2) { S.C.St = clamp(S.C.St + s * 0.08); S.C.auto = false; S.C.manual = true; syncChk(); }
+    if (S.mode === 1) { S.B.Dt = clamp(S.B.Dt + s * 0.25, 0, D_MAX); S.B.auto = false; syncChk(); }
+    if (S.mode === 2) { S.C.St = clamp(S.C.St + s * 0.1, 0, S_MAX); S.C.auto = false; S.C.manual = true; syncChk(); }
     if (S.mode === 3) { S.D.r = clamp(S.D.r + s * 0.03, 0.1, 0.6); }
   }
 });
-addEventListener('keyup', e => { if (e.key === ' ' && S.mode === 2 && S.C.holding) { S.C.holding = false; if (S.C.S > 0.62) wakeJerk(); } });
+addEventListener('keyup', e => { if (e.key === ' ' && S.mode === 2) S.C.holding = false; });
 
 /* =====================================================================
    MAIN LOOP
@@ -2108,8 +2133,10 @@ function step(now) {
   const cam = podCam(t);
   const needPod = !(m === 1 && cam.bp.voidVis >= 1 && cam.bp.dreamDist < 0.62) && !(m === 2 && (S.C.S < 0.28 || S.C.S > 0.82));
   if (needPod) renderPod(t, cam);
-  const needDream = !(m === 1 && cam.bp.dreamVis <= 0) && !(m === 2 && S.C.S < 0.6 && S.C.echo < 0.01);
-  if (needDream) renderDream(t);
+  const needDream = !(m === 1 && cam.bp.dreamVis <= 0) && !(m === 2 && S.C.S < 0.6);
+  const sleepZ = m === 1 ? cam.bp.sleep : m === 2 ? smooth(1.0, 1.3, S.C.S) : 0;
+  const look = m === 1 ? [S.B.look[0], -S.B.look[1]] : m === 2 ? [S.C.look[0], -S.C.look[1]] : null;
+  if (needDream) renderDream(t, sleepZ, look);
   if (m === 0) renderA(t);
   else if (m === 1) renderB(t, cam);
   else if (m === 2) renderC(t);
